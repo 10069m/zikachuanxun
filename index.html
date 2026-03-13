@@ -409,7 +409,6 @@
     </div>
 </div>
 
-<!-- 字条库管理弹窗 -->
 <div class="modal" id="noteLibraryModal">
     <div class="modal-content" style="max-width: 500px; max-height: 80vh; overflow-y: auto;">
         <div class="modal-title">📝 字条库管理</div>
@@ -431,7 +430,7 @@
     </div>
     <input type="text" class="tarot-input" id="tarotQuestion" placeholder="输入你的问题...">
     <div class="tarot-count">
-        <button class="count-btn" onclick="chooseTarotCount(1)">1张牌</button>
+        <button class="count-btn active" onclick="chooseTarotCount(1)">1张牌</button>
         <button class="count-btn" onclick="chooseTarotCount(3)">3张牌</button>
     </div>
     <button class="draw-btn" onclick="drawTarot()">抽牌</button>
@@ -482,281 +481,306 @@
 </div>
 
 <script>
-    let myInfo = JSON.parse(localStorage.getItem('myInfo')) || { id:'me', name:'我', avatar:'' };
-    let contacts = JSON.parse(localStorage.getItem('contacts')) || [{
-        id:1, name:'秦彻', avatar:'', persona:'高冷腹黑只对你温柔', status:'想你了', notes:['收到你的信啦','我一直在','晚安']
-    }];
-    let moments = JSON.parse(localStorage.getItem('moments')) || [];
-    let chatRecords = JSON.parse(localStorage.getItem('chatRecords')) || {};
-    let stickers = JSON.parse(localStorage.getItem('stickers')) || [];
-    let letterHistory = JSON.parse(localStorage.getItem('letterHistory')) || [];
-    let notes = JSON.parse(localStorage.getItem('notes')) || ['收到你的信啦', '我一直在', '晚安'];
+let myInfo = JSON.parse(localStorage.getItem('myInfo')) || { id:'me', name:'我', avatar:'' };
+let contacts = JSON.parse(localStorage.getItem('contacts')) || [{
+    id:1, name:'秦彻', avatar:'', persona:'高冷腹黑只对你温柔', status:'想你了', notes:['收到你的信啦','我一直在','晚安']
+}];
+let moments = JSON.parse(localStorage.getItem('moments')) || [];
+let chatRecords = JSON.parse(localStorage.getItem('chatRecords')) || {};
+let stickers = JSON.parse(localStorage.getItem('stickers')) || [];
+let letterHistory = JSON.parse(localStorage.getItem('letterHistory')) || [];
+let notes = JSON.parse(localStorage.getItem('notes')) || ['收到你的信啦', '我一直在', '晚安'];
 
-    let currentChat = null;
-    let currentViewUserId = null;
-    let currentMomentId = null;
-    let selectedTarotCount = 1;
+let currentChat = null;
+let currentViewUserId = null;
+let currentMomentId = null;
+let selectedTarotCount = 1;
 
-    function showPage(pageId) {
-        document.querySelectorAll('.page,.main-page,.chat-window,.sticker-panel,.modal').forEach(el=>el.style.display='none');
-        const el = document.getElementById(pageId);
-        if(pageId==='chatWindow') el.style.display='flex'; else el.style.display='block';
-        if(pageId==='chatPage') renderContacts();
-        if(pageId==='letterPage') renderLetterHistory();
-    }
+function showPage(pageId) {
+    document.querySelectorAll('.page,.main-page,.chat-window,.sticker-panel,.modal').forEach(el=>el.style.display='none');
+    const el = document.getElementById(pageId);
+    if(pageId==='chatWindow') el.style.display='flex'; else el.style.display='block';
+    if(pageId==='chatPage') renderContacts();
+    if(pageId==='letterPage') renderLetterHistory();
+}
 
-    function updateTime() {
-        const now = new Date();
-        document.getElementById('time').textContent = now.toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
-        document.getElementById('date').textContent = now.toLocaleDateString('zh-CN',{year:'numeric',month:'2-digit',day:'2-digit',weekday:'long'});
-    }
-    setInterval(updateTime,1000);
-    updateTime();
+function updateTime() {
+    const now = new Date();
+    document.getElementById('time').textContent = now.toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
+    document.getElementById('date').textContent = now.toLocaleDateString('zh-CN',{year:'numeric',month:'2-digit',day:'2-digit',weekday:'long'});
+}
+setInterval(updateTime,1000);
+updateTime();
 
-    function switchTab(tab) {
-        document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-        event.target.classList.add('active');
-        document.getElementById('contactsTab').style.display = tab==='contacts'?'block':'none';
-        document.getElementById('momentsTab').style.display = tab==='moments'?'block':'none';
-    }
-    function switchToAllMoments(){ currentViewUserId=null; switchTab('moments'); renderMoments(); }
-    function openUserMoment(uid){ currentViewUserId=uid; switchTab('moments'); renderMoments(); }
+function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById('contactsTab').style.display = tab==='contacts'?'block':'none';
+    document.getElementById('momentsTab').style.display = tab==='moments'?'block':'none';
+}
+function switchToAllMoments(){ currentViewUserId=null; switchTab('moments'); renderMoments(); }
+function openUserMoment(uid){ currentViewUserId=uid; switchTab('moments'); renderMoments(); }
 
-    function renderContacts(){
-        document.getElementById('contactList').innerHTML = contacts.map(c=>`
-        <div class="contact-item">
-            <div class="avatar" style="background-image:url('${c.avatar}')" onclick="openUserMoment('${c.id}')"></div>
-            <div onclick="openChat('${c.id}')" style="flex:1">
-                <div class="contact-name">${c.name}</div>
-                <div class="contact-status">${c.status}</div>
+function renderContacts(){
+    document.getElementById('contactList').innerHTML = contacts.map(c=>`
+    <div class="contact-item">
+        <div class="avatar" style="background-image:url('${c.avatar}')" onclick="openUserMoment('${c.id}')"></div>
+        <div onclick="openChat('${c.id}')" style="flex:1">
+            <div class="contact-name">${c.name}</div>
+            <div class="contact-status">${c.status}</div>
+        </div>
+    </div>`).join('');
+}
+
+function openAddContactModal(){ document.getElementById('addContactModal').style.display='flex' }
+function closeAddContactModal(){ document.getElementById('addContactModal').style.display='none' }
+function confirmAddContact(){
+    const name=document.getElementById('contactName').value.trim();
+    if(!name)return;
+    const f=document.getElementById('contactAvatarFile').files[0];
+    contacts.push({
+        id:Date.now(),
+        name,
+        avatar:f?URL.createObjectURL(f):'',
+        persona:document.getElementById('contactPersona').value,
+        status:document.getElementById('contactStatus').value,
+        notes:[...notes]
+    });
+    localStorage.setItem('contacts',JSON.stringify(contacts));
+    renderContacts(); closeAddContactModal();
+}
+
+function openChat(cid){
+    currentChat=cid;
+    const c=contacts.find(x=>x.id==cid);
+    document.getElementById('chatTitle').innerText=c.name;
+    showPage('chatWindow'); renderChatMessages();
+}
+function closeChat(){ showPage('chatPage'); currentChat=null; }
+function renderChatMessages(){
+    const m=document.getElementById('chatMessages');
+    const c=contacts.find(x=>x.id==currentChat);
+    const r=chatRecords[currentChat]||[];
+    m.innerHTML=r.map(x=>`
+    <div class="chat-message ${x.me?'me':'other'}">
+        <div class="avatar" style="background-image:url('${x.me?myInfo.avatar:c.avatar}')" onclick="openUserMoment('${x.me?'me':currentChat}')">
+            ${x.me?(myInfo.name[0]||'我'):c.name[0]}
+        </div>
+        <div class="msg-content">${x.content}</div>
+    </div>`).join('');
+    m.scrollTop=m.scrollHeight;
+}
+function sendChatMessage(){
+    const i=document.getElementById('chatInput');
+    const t=i.value.trim();
+    if(!t||!currentChat)return;
+    if(!chatRecords[currentChat])chatRecords[currentChat]=[];
+    chatRecords[currentChat].push({me:true,content:t});
+    localStorage.setItem('chatRecords',JSON.stringify(chatRecords));
+    i.value=''; renderChatMessages();
+    setTimeout(autoReply, document.getElementById('chatReplySpeed').value*1000);
+}
+function autoReply(){
+    const c=contacts.find(x=>x.id==currentChat);
+    const txt=c.notes[Math.floor(Math.random()*c.notes.length)];
+    chatRecords[currentChat].push({me:false,content:txt});
+    localStorage.setItem('chatRecords',JSON.stringify(chatRecords));
+    renderChatMessages();
+}
+
+function toggleStickers(){
+    const p=document.getElementById('stickerPanel');
+    p.style.display = p.style.display==='none'?'grid':'none';
+    renderStickers();
+}
+function pickSticker(){
+    const i=document.createElement('input');i.type='file';i.accept='image/*';
+    i.onchange=e=>{stickers.push(URL.createObjectURL(e.target.files[0]));localStorage.setItem('stickers',JSON.stringify(stickers));renderStickers()}
+    i.click();
+}
+function renderStickers(){
+    document.getElementById('stickerPanel').innerHTML=stickers.map(u=>`
+    <div class="sticker-item" onclick="sendSticker('${u}')"><img src="${u}"></div>`).join('');
+}
+function sendSticker(u){
+    if(!currentChat)return;
+    if(!chatRecords[currentChat])chatRecords[currentChat]=[];
+    chatRecords[currentChat].push({me:true,content:`<img src="${u}" style="width:120px">`});
+    localStorage.setItem('chatRecords',JSON.stringify(chatRecords));
+    renderChatMessages();
+    setTimeout(autoReply, document.getElementById('chatReplySpeed').value*1000);
+}
+
+function renderMoments(){
+    const list=document.getElementById('momentList');
+    let f = currentViewUserId ? moments.filter(m=>m.authorId==currentViewUserId) : moments;
+    list.innerHTML = f.map(m=>{
+        const a = m.authorId==='me' ? myInfo : contacts.find(c=>c.id==m.authorId);
+        return `
+        <div class="moment-item">
+            <div class="moment-author">
+                <div class="avatar" style="background-image:url('${a.avatar}')">${a.name[0]}</div>
+                <div><div class="contact-name">${a.name}</div><div class="contact-status"></div></div>
             </div>
-        </div>`).join('');
-    }
-
-    function openAddContactModal(){ document.getElementById('addContactModal').style.display='flex' }
-    function closeAddContactModal(){ document.getElementById('addContactModal').style.display='none' }
-    function confirmAddContact(){
-        const name=document.getElementById('contactName').value.trim();
-        if(!name)return;
-        const f=document.getElementById('contactAvatarFile').files[0];
-        contacts.push({
-            id:Date.now(),
-            name,
-            avatar:f?URL.createObjectURL(f):'',
-            persona:document.getElementById('contactPersona').value,
-            status:document.getElementById('contactStatus').value,
-            notes:[...notes]
-        });
-        localStorage.setItem('contacts',JSON.stringify(contacts));
-        renderContacts(); closeAddContactModal();
-    }
-
-    function openChat(cid){
-        currentChat=cid;
-        const c=contacts.find(x=>x.id==cid);
-        document.getElementById('chatTitle').innerText=c.name;
-        showPage('chatWindow'); renderChatMessages();
-    }
-    function closeChat(){ showPage('chatPage'); currentChat=null; }
-    function renderChatMessages(){
-        const m=document.getElementById('chatMessages');
-        const c=contacts.find(x=>x.id==currentChat);
-        const r=chatRecords[currentChat]||[];
-        m.innerHTML=r.map(x=>`
-        <div class="chat-message ${x.me?'me':'other'}">
-            <div class="avatar" style="background-image:url('${x.me?myInfo.avatar:c.avatar}')" onclick="openUserMoment('${x.me?'me':currentChat}')">
-                ${x.me?(myInfo.name[0]||'我'):c.name[0]}
+            <div class="moment-content">${m.content}</div>
+            <div class="moment-actions">
+                <span onclick="likeMoment(${m.id})">👍 ${m.likes}</span>
+                <span onclick="openCommentModal(${m.id})">💬 ${m.comments.length}</span>
             </div>
-            <div class="msg-content">${x.content}</div>
-        </div>`).join('');
-        m.scrollTop=m.scrollHeight;
-    }
-    function sendChatMessage(){
-        const i=document.getElementById('chatInput');
-        const t=i.value.trim();
-        if(!t||!currentChat)return;
-        if(!chatRecords[currentChat])chatRecords[currentChat]=[];
-        chatRecords[currentChat].push({me:true,content:t});
-        localStorage.setItem('chatRecords',JSON.stringify(chatRecords));
-        i.value=''; renderChatMessages();
-        setTimeout(autoReply, document.getElementById('chatReplySpeed').value*1000);
-    }
-    function autoReply(){
-        const c=contacts.find(x=>x.id==currentChat);
-        const txt=c.notes[Math.floor(Math.random()*c.notes.length)];
-        chatRecords[currentChat].push({me:false,content:txt});
-        localStorage.setItem('chatRecords',JSON.stringify(chatRecords));
-        renderChatMessages();
-    }
+            ${m.comments.map(c=>{
+                const ca=c.authorId==='me'?myInfo:contacts.find(cc=>cc.id==c.authorId);
+                return `<div class="comment-item"><b>${ca.name}</b>：${c.text}</div>`;
+            }).join('')}
+        </div>`;
+    }).join('');
+}
+function openPostMomentModal(){ document.getElementById('postMomentModal').style.display='flex' }
+function closePostMomentModal(){ document.getElementById('postMomentModal').style.display='none' }
+function postMoment(){
+    const t=document.getElementById('momentContent').value.trim();
+    if(!t)return;
+    const mid = Date.now();
+    moments.push({id:mid,authorId:'me',content:t,likes:0,comments:[]});
+    localStorage.setItem('moments',JSON.stringify(moments));
+    renderMoments();
+    closePostMomentModal();
 
-    function toggleStickers(){
-        const p=document.getElementById('stickerPanel');
-        p.style.display = p.style.display==='none'?'grid':'none';
-        renderStickers();
-    }
-    function pickSticker(){
-        const i=document.createElement('input');i.type='file';i.accept='image/*';
-        i.onchange=e=>{stickers.push(URL.createObjectURL(e.target.files[0]));localStorage.setItem('stickers',JSON.stringify(stickers));renderStickers()}
-        i.click();
-    }
-    function renderStickers(){
-        document.getElementById('stickerPanel').innerHTML=stickers.map(u=>`
-        <div class="sticker-item" onclick="sendSticker('${u}')"><img src="${u}"></div>`).join('');
-    }
-    function sendSticker(u){
-        if(!currentChat)return;
-        if(!chatRecords[currentChat])chatRecords[currentChat]=[];
-        chatRecords[currentChat].push({me:true,content:`<img src="${u}" style="width:120px">`});
-        localStorage.setItem('chatRecords',JSON.stringify(chatRecords));
-        renderChatMessages();
-        setTimeout(autoReply, document.getElementById('chatReplySpeed').value*1000);
-    }
-
-    function renderMoments(){
-        const list=document.getElementById('momentList');
-        let f = currentViewUserId ? moments.filter(m=>m.authorId==currentViewUserId) : moments;
-        list.innerHTML = f.map(m=>{
-            const a = m.authorId==='me' ? myInfo : contacts.find(c=>c.id==m.authorId);
-            return `
-            <div class="moment-item">
-                <div class="moment-author">
-                    <div class="avatar" style="background-image:url('${a.avatar}')">${a.name[0]}</div>
-                    <div><div class="contact-name">${a.name}</div><div class="contact-status"></div></div>
-                </div>
-                <div class="moment-content">${m.content}</div>
-                <div class="moment-actions">
-                    <span onclick="likeMoment(${m.id})">👍 ${m.likes}</span>
-                    <span onclick="openCommentModal(${m.id})">💬 ${m.comments.length}</span>
-                </div>
-                ${m.comments.map(c=>{
-                    const ca=c.authorId==='me'?myInfo:contacts.find(cc=>cc.id==c.authorId);
-                    return `<div class="comment-item"><b>${ca.name}</b>：${c.text}</div>`;
-                }).join('')}
-            </div>`;
-        }).join('');
-    }
-    function openPostMomentModal(){ document.getElementById('postMomentModal').style.display='flex' }
-    function closePostMomentModal(){ document.getElementById('postMomentModal').style.display='none' }
-    function postMoment(){
-        const t=document.getElementById('momentContent').value.trim();
-        if(!t)return;
-        const mid = Date.now();
-        moments.push({id:mid,authorId:'me',content:t,likes:0,comments:[]});
-        localStorage.setItem('moments',JSON.stringify(moments));
-        renderMoments();
-        closePostMomentModal();
-
-        setTimeout(()=>{
-            const moment = moments.find(m=>m.id==mid);
-            if(moment){
-                moment.likes += 1;
-                localStorage.setItem('moments',JSON.stringify(moments));
-                renderMoments();
-            }
-        }, 800);
-
-        setTimeout(()=>{
-            const moment = moments.find(m=>m.id==mid);
-            if(!moment) return;
-            const contact = contacts[0];
-            if(!contact || !contact.notes || contact.notes.length === 0) return;
-            const texts = contact.notes.filter(s => s && s.trim());
-            if(texts.length === 0) return;
-            const commentText = texts[Math.floor(Math.random() * texts.length)];
-            moment.comments.push({
-                authorId: contact.id,
-                text: commentText
-            });
+    setTimeout(()=>{
+        const moment = moments.find(m=>m.id==mid);
+        if(moment){
+            moment.likes += 1;
             localStorage.setItem('moments',JSON.stringify(moments));
             renderMoments();
-        }, 1500);
-    }
-    function likeMoment(mid){
-        const m=moments.find(x=>x.id==mid);m.likes++;
-        localStorage.setItem('moments',JSON.stringify(moments));renderMoments();
-    }
-    function openCommentModal(mid){ currentMomentId=mid; document.getElementById('commentModal').style.display='flex' }
-    function closeCommentModal(){ document.getElementById('commentModal').style.display='none' }
-    function submitComment(){
-        const t=document.getElementById('commentText').value.trim();
-        if(!t||!currentMomentId)return;
-        const m=moments.find(x=>x.id==currentMomentId);
-        m.comments.push({authorId:'me',text:t});
-        localStorage.setItem('moments',JSON.stringify(moments));
-        renderMoments(); closeCommentModal();
-    }
-
-    function getNowTimeStr(){
-        const d=new Date();
-        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-    }
-    function sendLetter(){
-        const content=document.getElementById('letterInput').value.trim();
-        if(!content)return;
-        letterHistory.unshift({type:'out',content,time:getNowTimeStr()});
-        localStorage.setItem('letterHistory',JSON.stringify(letterHistory));
-        document.getElementById('letterInput').value='';
-        renderLetterHistory();
-        setTimeout(()=>{
-            const txt=contacts[0].notes[Math.floor(Math.random()*contacts[0].notes.length)];
-            letterHistory.unshift({type:'in',content:txt,time:getNowTimeStr()});
-            localStorage.setItem('letterHistory',JSON.stringify(letterHistory));
-            renderLetterHistory();
-        }, document.getElementById('letterReplyTime').value * 60 * 1000);
-    }
-    function renderLetterHistory(){
-        document.getElementById('letterHistory').innerHTML=letterHistory.map(i=>`
-        <div class="letter-item ${i.type==='out'?'letter-out':'letter-in'}">
-            <div>${i.content}</div>
-            <div class="letter-time">${i.time}</div>
-        </div>`).join('');
-    }
-    function toggleLetterHistory(){
-        const b=document.getElementById('letterHistory');
-        b.style.display = b.style.display==='block'?'none':'block';
-        renderLetterHistory();
-    }
-
-    const tarotCards = [
-        {name:'愚者',meaning:'新的开始，勇敢前行'},
-        {name:'魔术师',meaning:'创造力与机会'},
-        {name:'女祭司',meaning:'直觉与智慧'},
-        {name:'女皇',meaning:'丰收与温柔'},
-        {name:'皇帝',meaning:'责任与掌控'},
-        {name:'恋人',meaning:'爱情与选择'},
-        {name:'战车',meaning:'胜利与坚持'},
-        {name:'力量',meaning:'勇气与温柔'},
-        {name:'隐士',meaning:'思考与独处'},
-        {name:'命运之轮',meaning:'转机到来'},
-        {name:'正义',meaning:'公平与抉择'},
-        {name:'吊人',meaning:'换个角度看世界'},
-        {name:'死神',meaning:'结束即是新生'},
-        {name:'节制',meaning:'平衡与耐心'},
-        {name:'恶魔',meaning:'挣脱束缚'},
-        {name:'塔',meaning:'意外与突破'},
-        {name:'星星',meaning:'希望与光明'},
-        {name:'月亮',meaning:'不安与幻觉'},
-        {name:'太阳',meaning:'温暖成功快乐'},
-        {name:'审判',meaning:'觉醒与重生'},
-        {name:'世界',meaning:'圆满完成'}
-    ];
-    function chooseTarotCount(n){
-        selectedTarotCount=n;
-        document.querySelectorAll('.count-btn').forEach(b=>b.classList.remove('active'));
-        event.target.classList.add('active');
-    }
-function drawTarot(){
-        const q=document.getElementById('tarotQuestion').value;
-        if(!q){alert('请输入问题');return;}
-        let res='';
-        let list=[];
-        for(let i=0;i<selectedTarotCount;i++){
-            const c=tarotCards[Math.floor(Math.random()*tarotCards.length)];
-            list.push(c);
         }
-        list.forEach((c,i)=>{
-            res+=`【第${i+1}张：${c.name}】\n${c.meaning}\n\n`;
+    }, 800);
+
+    setTimeout(()=>{
+        const moment = moments.find(m=>m.id==mid);
+        if(!moment) return;
+        const contact = contacts[0];
+        if(!contact || !contact.notes || contact.notes.length === 0) return;
+        const texts = contact.notes.filter(s => s && s.trim());
+        if(texts.length === 0) return;
+        const commentText = texts[Math.floor(Math.random() * texts.length)];
+        moment.comments.push({
+            authorId: contact.id,
+            text: commentText
         });
-        document.getElementById('tarotResult').innerText=res.trim();
-        document.getElementById('tarotResult').style.display='block';
+        localStorage.setItem('moments',JSON.stringify(moments));
+        renderMoments();
+    }, 1500);
+}
+function likeMoment(mid){
+    const m=moments.find(x=>x.id==mid);m.likes++;
+    localStorage.setItem('moments',JSON.stringify(moments));renderMoments();
+}
+function openCommentModal(mid){ currentMomentId=mid; document.getElementById('commentModal').style.display='flex' }
+function closeCommentModal(){ document.getElementById('commentModal').style.display='none' }
+function submitComment(){
+    const t=document.getElementById('commentText').value.trim();
+    if(!t||!currentMomentId)return;
+    const m=moments.find(x=>x.id==currentMomentId);
+    m.comments.push({authorId:'me',text:t});
+    localStorage.setItem('moments',JSON.stringify(moments));
+    renderMoments(); closeCommentModal();
+}
+
+function getNowTimeStr(){
+    const d=new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
+function sendLetter(){
+    const content=document.getElementById('letterInput').value.trim();
+    if(!content)return;
+    letterHistory.unshift({type:'out',content,time:getNowTimeStr()});
+    localStorage.setItem('letterHistory',JSON.stringify(letterHistory));
+    document.getElementById('letterInput').value='';
+    renderLetterHistory();
+    setTimeout(()=>{
+        const txt=contacts[0].notes[Math.floor(Math.random()*contacts[0].notes.length)];
+        letterHistory.unshift({type:'in',content:txt,time:getNowTimeStr()});
+        localStorage.setItem('letterHistory',JSON.stringify(letterHistory));
+        renderLetterHistory();
+    }, document.getElementById('letterReplyTime').value * 60 * 1000);
+}
+function renderLetterHistory(){
+    document.getElementById('letterHistory').innerHTML=letterHistory.map(i=>`
+    <div class="letter-item ${i.type==='out'?'letter-out':'letter-in'}">
+        <div>${i.content}</div>
+        <div class="letter-time">${i.time}</div>
+    </div>`).join('');
+}
+function toggleLetterHistory(){
+    const b=document.getElementById('letterHistory');
+    b.style.display = b.style.display==='block'?'none':'block';
+    renderLetterHistory();
+}
+
+const tarotCards = [
+    {name:'愚者',meaning:'新的开始，勇敢前行'},
+    {name:'魔术师',meaning:'创造力与机会'},
+    {name:'女祭司',meaning:'直觉与智慧'},
+    {name:'女皇',meaning:'丰收与温柔'},
+    {name:'皇帝',meaning:'责任与掌控'},
+    {name:'恋人',meaning:'爱情与选择'},
+    {name:'战车',meaning:'胜利与坚持'},
+    {name:'力量',meaning:'勇气与温柔'},
+    {name:'隐士',meaning:'思考与独处'},
+    {name:'命运之轮',meaning:'转机到来'},
+    {name:'正义',meaning:'公平与抉择'},
+    {name:'吊人',meaning:'换个角度看世界'},
+    {name:'死神',meaning:'结束即是新生'},
+    {name:'节制',meaning:'平衡与耐心'},
+    {name:'恶魔',meaning:'挣脱束缚'},
+    {name:'塔',meaning:'意外与突破'},
+    {name:'星星',meaning:'希望与光明'},
+    {name:'月亮',meaning:'不安与幻觉'},
+    {name:'太阳',meaning:'温暖成功快乐'},
+    {name:'审判',meaning:'觉醒与重生'},
+    {name:'世界',meaning:'圆满完成'}
+];
+function chooseTarotCount(n){
+    selectedTarotCount=n;
+    document.querySelectorAll('.count-btn').forEach(b=>b.classList.remove('active'));
+    event.target.classList.add('active');
+}
+function drawTarot(){
+    const q=document.getElementById('tarotQuestion').value;
+    if(!q){alert('请输入问题');return;}
+    let res='';
+    let list=[];
+    for(let i=0;i<selectedTarotCount;i++){
+        const c=tarotCards[Math.floor(Math.random()*tarotCards.length)];
+        list.push(c);
     }
+    list.forEach((c,i)=>{
+        res+=`【第${i+1}张：${c.name}】\n${c.meaning}\n\n`;
+    });
+    document.getElementById('tarotResult').innerText=res.trim();
+    document.getElementById('tarotResult').style.display='block';
+}
+
+function setMyAvatar(){
+    const f=document.getElementById('myAvatarFile').files[0];
+    if(f){myInfo.avatar=URL.createObjectURL(f);localStorage.setItem('myInfo',JSON.stringify(myInfo));}
+}
+function setBgImage(){
+    const f=document.getElementById('bgFile').files[0];
+    if(f)document.body.style.background=`url(${URL.createObjectURL(f)})`;
+}
+function setChatBgImage(){
+    const f=document.getElementById('chatBgFile').files[0];
+    if(f)document.querySelector('.chat-messages').style.background=`url(${URL.createObjectURL(f)})`;
+}
+
+function syncNotesToContacts() {
+    contacts.forEach(c => {
+        c.notes = [...notes];
+    });
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+}
+
+function batchAddNotes() {
+    const text = document.getElementById('batchNotes').value.trim();
+    if (!text) return alert('请输入字条内容');
+    const newNotes = text
