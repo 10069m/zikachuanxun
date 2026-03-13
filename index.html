@@ -1,243 +1,766 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>专属传讯纸条</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:PingFang SC,Microsoft YaHei,sans-serif}
-body{background:#f8f9fa;padding:20px}
-.page{display:none}
-.main-page{display:block}
-.time{font-size:32px;text-align:center;margin-top:10px}
-.date{font-size:14px;color:#666;text-align:center;margin-top:4px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:30px}
-.card{background:#fff;border-radius:16px;padding:22px 14px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.05)}
-.card-icon{font-size:32px;margin-bottom:8px}
-.back-btn{font-size:22px;background:none;border:none;margin-right:10px}
-.page-header{display:flex;align-items:center;margin-bottom:16px}
-.add-contact-btn{background:#ff7b9c;color:#fff;border:none;border-radius:12px;padding:12px;width:100%;margin-bottom:12px}
-.contact-item{background:#fff;border-radius:12px;padding:12px;display:flex;align-items:center;margin-bottom:8px}
-.contact-avatar{width:42px;height:42px;background:#ff7b9c;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;margin-right:10px;background-size:cover}
-.chat-window{display:none; height:100vh;flex-direction:column}
-.chat-messages{flex:1;overflow-y:auto;padding:10px}
-.chat-message{max-width:75%;padding:10px 14px;border-radius:18px;margin-bottom:10px}
-.chat-message.me{background:#ff7b9c;color:#fff;margin-left:auto}
-.chat-message.other{background:#fff;margin-right:auto}
-.chat-input-area{display:flex;align-items:center;padding:8px 0;border-top:1px solid #eee}
-.chat-input{flex:1;border:none;background:#f1f1f1;border-radius:20px;padding:10px 14px}
-.chat-icon{font-size:22px;margin:0 6px;color:#666}
-.send-btn{background:#ff7b9c;color:#fff;border:none;border-radius:20px;padding:8px 16px;margin-left:6px}
-.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);display:none;align-items:center;justify-content:center}
-.modal-content{background:#fff;width:90%;border-radius:16px;padding:20px}
-.form-item{margin-bottom:14px}
-.form-label{font-size:14px;color:#333;margin-bottom:4px}
-.form-input{width:100%;border:1px solid #eee;border-radius:10px;padding:10px}
-.modal-buttons{display:flex;gap:10px}
-.modal-btn{flex:1;padding:10px;border-radius:10px;border:none}
-.confirm{background:#ff7b9c;color:#fff}
-.sticker-panel{position:fixed;bottom:0;left:0;width:100%;background:#fff;border-top:1px solid #eee;padding:10px;display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
-.sticker-item{width:100%;aspect-ratio:1;background:#f1f1f1;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>专属传讯纸条</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        body {
+            background: #f8f9fa;
+            padding: 20px;
+        }
+        .main-page { display: block; }
+        .time-bar { text-align: center; margin-bottom: 10px; }
+        .time { font-size: 32px; font-weight: 300; color: #333; }
+        .date { font-size: 16px; color: #666; margin-top: 5px; }
+        .divider { height: 20px; }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .card:hover { transform: translateY(-3px); }
+        .card-icon { font-size: 36px; margin-bottom: 10px; }
+        .card-title { font-size: 18px; color: #333; }
+
+        .page { display: none; }
+        .page-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .back-btn {
+            font-size: 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            margin-right: 15px;
+        }
+        .page-title { font-size: 22px; font-weight: 500; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            width: 90%;
+            max-width: 400px;
+        }
+        .modal-title {
+            font-size: 20px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .form-item { margin-bottom: 15px; }
+        .form-label { font-size: 14px; margin-bottom: 5px; display: block; }
+        .form-input, .form-file {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .modal-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+        }
+        .modal-btn.cancel { background: #f5f5f5; }
+        .modal-btn.confirm { background: #ff7b9c; color: white; }
+
+        .letter-editor {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .letter-editor textarea {
+            width: 100%;
+            height: 150px;
+            border: none;
+            resize: none;
+            font-size: 16px;
+            outline: none;
+        }
+        .send-letter {
+            background: #ff7b9c;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        .history-btn {
+            background: #ffffff;
+            color: #ff7b9c;
+            border: 1px solid #ff7b9c;
+            padding: 10px;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 15px;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+        .letter-history {
+            margin-top: 10px;
+            display: none;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .letter-item {
+            background: #fff;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+        .letter-out { text-align: right; background: #fce4ec; }
+        .letter-in { text-align: left; background: #f5f5f5; }
+        .letter-time { font-size: 12px; color: #999; margin-top: 4px; }
+
+        .chat-tabs {
+            display: flex;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 15px;
+        }
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+        }
+        .tab.active { border-bottom: 2px solid #ff7b9c; color: #ff7b9c; }
+        .contact-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .avatar {
+            width: 42px; height: 42px;
+            border-radius: 50%;
+            background: #ff7b9c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-right: 12px;
+            background-size: cover;
+            background-position: center;
+            cursor: pointer;
+        }
+        .contact-name { font-size: 16px; }
+        .contact-status { font-size: 12px; color: #999; margin-top: 2px; }
+        .add-contact-btn {
+            background: #ff7b9c;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+        .moment-item {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+        .moment-author { display: flex; align-items: center; margin-bottom: 10px; }
+        .moment-content { font-size: 15px; line-height: 1.5; }
+        .moment-actions { display: flex; gap: 15px; margin-top: 10px; font-size: 14px; color: #666; }
+        .comment-item { font-size: 13px; color: #666; margin-top: 5px; }
+        .chat-window {
+            display: none;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .chat-header {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            margin: 15px 0;
+            padding: 10px;
+        }
+        .chat-message {
+            display: flex;
+            align-items: flex-end;
+            max-width: 75%;
+            margin-bottom: 10px;
+        }
+        .chat-message.me { flex-direction: row-reverse; margin-left: auto; }
+        .chat-message .msg-content { padding: 10px 14px; border-radius: 18px; margin: 0 8px; }
+        .chat-message.me .msg-content { background: #fce4ec; color: #333; }
+        .chat-message.other .msg-content { background: #f5f5f5; color: #333; }
+        .chat-input-area {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 0;
+            border-top: 1px solid #eee;
+        }
+        .chat-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #eee;
+            border-radius: 20px;
+            font-size: 16px;
+        }
+        .chat-icon { font-size: 20px; cursor: pointer; color: #666; }
+        .send-btn { background: #ff7b9c; color: white; border: none; padding: 10px 15px; border-radius: 20px; cursor: pointer; }
+
+        .sticker-panel {
+            position: fixed;
+            bottom: 0; left: 0;
+            width: 100%;
+            background: white;
+            border-top: 1px solid #eee;
+            padding: 10px;
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+        }
+        .sticker-item { width: 100%; aspect-ratio: 1; background: #f1f1f1; border-radius: 12px; overflow: hidden; }
+        .sticker-item img { width: 100%; height: 100%; object-fit: cover; }
+
+        .tarot-input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        .tarot-count { display: flex; gap: 10px; margin-bottom: 15px; }
+        .count-btn {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+        }
+        .count-btn.active { background: #ff7b9c; color: white; border-color: #ff7b9c; }
+        .draw-btn {
+            background: #ff7b9c;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .tarot-result { margin-top: 20px; background: white; border-radius: 8px; padding: 15px; }
+
+        .setting-item {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+        .setting-label { font-size: 16px; margin-bottom: 8px; }
+        .setting-input, .setting-select, .file-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+        }
+    </style>
 </head>
 <body>
 
-<!-- 主页面 -->
 <div class="main-page" id="mainPage">
-  <div class="time" id="time">00:00</div>
-  <div class="date" id="date"></div>
-  <div class="grid">
-    <div class="card" onclick="showPage('letterPage')"><div class="card-icon">✉️</div>写信</div>
-    <div class="card" onclick="showPage('chatPage')"><div class="card-icon">💬</div>通讯</div>
-    <div class="card" onclick="showPage('tarotPage')"><div class="card-icon">🔮</div>塔罗</div>
-    <div class="card" onclick="showPage('settingPage')"><div class="card-icon">⚙️</div>设置</div>
-  </div>
+    <div class="time-bar">
+        <div class="time" id="time">00:00</div>
+        <div class="date" id="date">2025-01-01 星期三</div>
+    </div>
+    <div class="divider"></div>
+    <div class="grid">
+        <div class="card" onclick="showPage('letterPage')">✉️<br>写信</div>
+        <div class="card" onclick="showPage('chatPage')">💬<br>通讯</div>
+        <div class="card" onclick="showPage('tarotPage')">🔮<br>塔罗</div>
+        <div class="card" onclick="showPage('settingPage')">⚙️<br>设置</div>
+    </div>
 </div>
 
-<!-- 通讯 -->
+<div class="page" id="letterPage">
+    <div class="page-header">
+        <button class="back-btn" onclick="showPage('mainPage')">←</button>
+        <div class="page-title">写信</div>
+    </div>
+    <div class="letter-editor"><textarea id="letterInput" placeholder="写下你想对他说的话..."></textarea></div>
+    <button class="send-letter" onclick="sendLetter()">发送信件</button>
+    <button class="history-btn" onclick="toggleLetterHistory()">📜 历史信件记录</button>
+    <div class="letter-history" id="letterHistory"></div>
+</div>
+
 <div class="page" id="chatPage">
-  <div class="page-header"><button class="back-btn" onclick="showPage('mainPage')">←</button><div>通讯</div></div>
-  <button class="add-contact-btn" onclick="openAddModal()">+ 创建联系人</button>
-  <div id="contactList"></div>
+    <div class="page-header">
+        <button class="back-btn" onclick="showPage('mainPage')">←</button>
+        <div class="page-title">通讯</div>
+    </div>
+    <div class="chat-tabs">
+        <div class="tab active" onclick="switchTab('contacts')">联系人</div>
+        <div class="tab" onclick="switchToAllMoments()">全部朋友圈</div>
+    </div>
+    <div id="contactsTab">
+        <button class="add-contact-btn" onclick="openAddContactModal()">+ 创建联系人</button>
+        <div id="contactList"></div>
+    </div>
+    <div id="momentsTab" style="display:none">
+        <button class="add-contact-btn" onclick="openPostMomentModal()">➕ 发朋友圈</button>
+        <div id="momentList"></div>
+    </div>
 </div>
 
-<!-- 聊天窗口 -->
 <div class="chat-window" id="chatWindow">
-  <div class="page-header">
-    <button class="back-btn" onclick="closeChat()">←</button>
-    <div id="chatTitle"></div>
-  </div>
-  <div class="chat-messages" id="chatMessages"></div>
-  <div class="chat-input-area">
-    <div class="chat-icon" onclick="toggleStickers()">○</div>
-    <div class="chat-icon" onclick="pickSticker()">➕</div>
-    <input class="chat-input" id="chatInput" placeholder="输入消息...">
-    <button class="send-btn" onclick="sendMsg()">△</button>
-  </div>
+    <div class="chat-header">
+        <button class="back-btn" onclick="closeChat()">←</button>
+        <div class="page-title" id="chatTitle"></div>
+    </div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-input-area">
+        <span class="chat-icon" onclick="toggleStickers()">○</span>
+        <span class="chat-icon" onclick="pickSticker()">➕</span>
+        <input type="text" class="chat-input" id="chatInput" placeholder="输入消息...">
+        <button class="send-btn" onclick="sendChatMessage()">△</button>
+    </div>
 </div>
 
-<!-- 表情包面板 -->
 <div id="stickerPanel" class="sticker-panel" style="display:none"></div>
 
-<!-- 创建联系人弹窗 -->
-<div class="modal" id="addModal">
-  <div class="modal-content">
-    <div style="font-size:18px;margin-bottom:14px">创建联系人</div>
-    <div class="form-item"><div class="form-label">头像URL</div><input class="form-input" id="a_avatar"></div>
-    <div class="form-item"><div class="form-label">名字</div><input class="form-input" id="a_name"></div>
-    <div class="form-item"><div class="form-label">人设</div><textarea class="form-input" id="a_persona"></textarea></div>
-    <div class="form-item"><div class="form-label">状态</div><input class="form-input" id="a_status" value="在线"></div>
-    <div class="modal-buttons">
-      <button class="modal-btn" onclick="closeModal()">取消</button>
-      <button class="modal-btn confirm" onclick="addContact()">确认</button>
+<div class="modal" id="addContactModal">
+    <div class="modal-content">
+        <div class="modal-title">创建联系人</div>
+        <div class="form-item"><label class="form-label">头像</label><input type="file" class="form-file" id="contactAvatarFile" accept="image/*"></div>
+        <div class="form-item"><label class="form-label">名称</label><input type="text" class="form-input" id="contactName" required></div>
+        <div class="form-item"><label class="form-label">人设</label><textarea class="form-input" id="contactPersona" rows="3"></textarea></div>
+        <div class="form-item"><label class="form-label">状态</label><input type="text" class="form-input" id="contactStatus" value="在线"></div>
+        <div class="modal-buttons">
+            <button class="modal-btn cancel" onclick="closeAddContactModal()">取消</button>
+            <button class="modal-btn confirm" onclick="confirmAddContact()">确认创建</button>
+        </div>
     </div>
-  </div>
 </div>
 
-<!-- 其他页面省略（写信/塔罗/设置） -->
-<div class="page" id="letterPage"><div class="page-header"><button class="back-btn" onclick="showPage('mainPage')">←</button>写信</div></div>
-<div class="page" id="tarotPage"><div class="page-header"><button class="back-btn" onclick="showPage('mainPage')">←</button>塔罗</div></div>
-<div class="page" id="settingPage"><div class="page-header"><button class="back-btn" onclick="showPage('mainPage')">←</button>设置</div></div>
+<div class="modal" id="postMomentModal">
+    <div class="modal-content">
+        <div class="modal-title">发朋友圈</div>
+        <div class="form-item"><textarea class="form-input" id="momentContent" rows="4" placeholder="说点什么..."></textarea></div>
+        <div class="modal-buttons">
+            <button class="modal-btn cancel" onclick="closePostMomentModal()">取消</button>
+            <button class="modal-btn confirm" onclick="postMoment()">发布</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="commentModal">
+    <div class="modal-content">
+        <div class="modal-title">评论</div>
+        <div class="form-item"><input type="text" class="form-input" id="commentText" placeholder="输入评论..."></div>
+        <div class="modal-buttons">
+            <button class="modal-btn cancel" onclick="closeCommentModal()">取消</button>
+            <button class="modal-btn confirm" onclick="submitComment()">发送</button>
+        </div>
+    </div>
+</div>
+
+<div class="page" id="tarotPage">
+    <div class="page-header">
+        <button class="back-btn" onclick="showPage('mainPage')">←</button>
+        <div class="page-title">塔罗占卜</div>
+    </div>
+    <input type="text" class="tarot-input" id="tarotQuestion" placeholder="输入你的问题...">
+    <div class="tarot-count">
+        <button class="count-btn" onclick="chooseTarotCount(1)">1张牌</button>
+        <button class="count-btn" onclick="chooseTarotCount(3)">3张牌</button>
+    </div>
+    <button class="draw-btn" onclick="drawTarot()">抽牌</button>
+    <div class="tarot-result" id="tarotResult" style="display:none;white-space:pre-line"></div>
+</div>
+
+<!-- 这里恢复成你原来的设置页面 ↓↓↓ -->
+<div class="page" id="settingPage">
+    <div class="page-header">
+        <button class="back-btn" onclick="showPage('mainPage')">←</button>
+        <div class="page-title">设置</div>
+    </div>
+    <div class="setting-item">
+        <div class="setting-label">我的头像（从相册选择）</div>
+        <input type="file" class="file-input" id="myAvatarFile" accept="image/*" onchange="setMyAvatar()">
+    </div>
+    <div class="setting-item">
+        <div class="setting-label">主界面背景</div>
+        <input type="file" class="file-input" id="bgFile" accept="image/*" onchange="setBgImage()">
+    </div>
+    <div class="setting-item">
+        <div class="setting-label">聊天背景</div>
+        <input type="file" class="file-input" id="chatBgFile" accept="image/*" onchange="setChatBgImage()">
+    </div>
+    <div class="setting-item">
+        <div class="setting-label">写信回信时间（分钟）</div>
+        <input type="number" class="setting-input" id="letterReplyTime" value="60" min="1">
+    </div>
+    <div class="setting-item">
+        <div class="setting-label">聊天回复速度（秒，1-60）</div>
+        <input type="number" class="setting-input" id="chatReplySpeed" value="10" min="1" max="60">
+    </div>
+    <div class="setting-item">
+        <div class="setting-label">连续发消息上限</div>
+        <input type="number" class="setting-input" id="spamLimit" value="5" min="1">
+    </div>
+    <div class="setting-item">
+        <div class="setting-label">批量添加字条（一行一句）</div>
+        <textarea class="setting-input" id="batchNotes" rows="4" placeholder="输入字条，每行一句"></textarea>
+    </div>
+    <div class="setting-item">
+        <div class="setting-label">导入JSON字条</div>
+        <input type="file" id="jsonFile" accept=".json">
+    </div>
+</div>
 
 <script>
-// 数据永久保存
-let contacts = JSON.parse(localStorage.getItem('contacts')) || []
-let chatRecords = JSON.parse(localStorage.getItem('chatRecords')) || {}
-let stickers = JSON.parse(localStorage.getItem('stickers')) || []
-let currentCid = null
+    let myInfo = JSON.parse(localStorage.getItem('myInfo')) || { id:'me', name:'我', avatar:'' };
+    let contacts = JSON.parse(localStorage.getItem('contacts')) || [{
+        id:1, name:'秦彻', avatar:'', persona:'高冷腹黑只对你温柔', status:'想你了', notes:['收到你的信啦','我一直在','晚安']
+    }];
+    let moments = JSON.parse(localStorage.getItem('moments')) || [];
+    let chatRecords = JSON.parse(localStorage.getItem('chatRecords')) || {};
+    let stickers = JSON.parse(localStorage.getItem('stickers')) || [];
+    let letterHistory = JSON.parse(localStorage.getItem('letterHistory')) || [];
 
-// 时间
-function updateTime(){
-  let d = new Date()
-  document.getElementById('time').innerText = d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})
-  document.getElementById('date').innerText = d.toLocaleDateString() + ' ' + '星期' + '日一二三四五六'[d.getDay()]
-}
-setInterval(updateTime,1000); updateTime()
+    let currentChat = null;
+    let currentViewUserId = null;
+    let currentMomentId = null;
+    let selectedTarotCount = 1;
 
-// 页面
-function showPage(id){
-  document.querySelectorAll('.page,.main-page,.chat-window').forEach(e=>e.style.display='none')
-  document.getElementById(id).style.display = id=='chatWindow'?'flex':'block'
-  if(id=='chatPage') renderContacts()
-}
+    function showPage(pageId) {
+        document.querySelectorAll('.page,.main-page,.chat-window,.sticker-panel,.modal').forEach(el=>el.style.display='none');
+        const el = document.getElementById(pageId);
+        if(pageId==='chatWindow') el.style.display='flex'; else el.style.display='block';
+        if(pageId==='chatPage') renderContacts();
+        if(pageId==='letterPage') renderLetterHistory();
+    }
 
-// 联系人
-function renderContacts(){
-  let list = document.getElementById('contactList')
-  list.innerHTML = contacts.map(c=>`
-    <div class="contact-item" onclick="openChat(${c.id})">
-      <div class="contact-avatar" style="background-image:url(${c.avatar})">${c.name[0]}</div>
-      <div><div>${c.name}</div><div style="font-size:12px;color:#999">${c.status}</div></div>
-    </div>
-  `).join('')
-}
+    function updateTime() {
+        const now = new Date();
+        document.getElementById('time').textContent = now.toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
+        document.getElementById('date').textContent = now.toLocaleDateString('zh-CN',{year:'numeric',month:'2-digit',day:'2-digit',weekday:'long'});
+    }
+    setInterval(updateTime,1000);
+    updateTime();
 
-function openAddModal(){document.getElementById('addModal').style.display='flex'}
-function closeModal(){document.getElementById('addModal').style.display='none'}
-function addContact(){
-  let name = document.getElementById('a_name').value
-  if(!name)return
-  let c = {
-    id:Date.now(),
-    name:name,
-    avatar:document.getElementById('a_avatar').value||'',
-    persona:document.getElementById('a_persona').value||'',
-    status:document.getElementById('a_status').value||'在线',
-    notes:['在呢','想你啦','晚安','今天开心吗']
-  }
-  contacts.push(c)
-  localStorage.setItem('contacts',JSON.stringify(contacts))
-  renderContacts()
-  closeModal()
-}
+    function switchTab(tab) {
+        document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById('contactsTab').style.display = tab==='contacts'?'block':'none';
+        document.getElementById('momentsTab').style.display = tab==='moments'?'block':'none';
+    }
+    function switchToAllMoments(){ currentViewUserId=null; switchTab('moments'); renderMoments(); }
+    function openUserMoment(uid){ currentViewUserId=uid; switchTab('moments'); renderMoments(); }
 
-// 聊天
-function openChat(cid){
-  currentCid = cid
-  let c = contacts.find(x=>x.id==cid)
-  document.getElementById('chatTitle').innerText = c.name
-  showPage('chatWindow')
-  renderMsg()
-  setTimeout(()=>autoReply(), Math.random()*3000+2000)
-}
-function closeChat(){showPage('chatPage')}
+    function renderContacts(){
+        document.getElementById('contactList').innerHTML = contacts.map(c=>`
+        <div class="contact-item">
+            <div class="avatar" style="background-image:url('${c.avatar}')" onclick="openUserMoment('${c.id}')"></div>
+            <div onclick="openChat('${c.id}')" style="flex:1">
+                <div class="contact-name">${c.name}</div>
+                <div class="contact-status">${c.status}</div>
+            </div>
+        </div>`).join('');
+    }
 
-function renderMsg(){
-  let m = document.getElementById('chatMessages')
-  let arr = chatRecords[currentCid] || []
-  m.innerHTML = arr.map(x=>`
-    <div class="chat-message ${x.me?'me':'other'}">${x.content}</div>
-  `).join('')
-  m.scrollTop = m.scrollHeight
-}
+    function openAddContactModal(){ document.getElementById('addContactModal').style.display='flex' }
+    function closeAddContactModal(){ document.getElementById('addContactModal').style.display='none' }
+    function confirmAddContact(){
+        const name=document.getElementById('contactName').value.trim();
+        if(!name)return;
+        const f=document.getElementById('contactAvatarFile').files[0];
+        contacts.push({
+            id:Date.now(),
+            name,
+            avatar:f?URL.createObjectURL(f):'',
+            persona:document.getElementById('contactPersona').value,
+            status:document.getElementById('contactStatus').value,
+            notes:['我在呢','晚安','想你']
+        });
+        localStorage.setItem('contacts',JSON.stringify(contacts));
+        renderContacts(); closeAddContactModal();
+    }
 
-function sendMsg(){
-  let i = document.getElementById('chatInput')
-  let t = i.value.trim()
-  if(!t||!currentCid)return
-  if(!chatRecords[currentCid])chatRecords[currentCid]=[]
-  chatRecords[currentCid].push({me:true,content:t})
-  localStorage.setItem('chatRecords',JSON.stringify(chatRecords))
-  i.value=''
-  renderMsg()
-  setTimeout(autoReply,1000)
-}
+    function openChat(cid){
+        currentChat=cid;
+        const c=contacts.find(x=>x.id==cid);
+        document.getElementById('chatTitle').innerText=c.name;
+        showPage('chatWindow'); renderChatMessages();
+    }
+    function closeChat(){ showPage('chatPage'); currentChat=null; }
+    function renderChatMessages(){
+        const m=document.getElementById('chatMessages');
+        const c=contacts.find(x=>x.id==currentChat);
+        const r=chatRecords[currentChat]||[];
+        m.innerHTML=r.map(x=>`
+        <div class="chat-message ${x.me?'me':'other'}">
+            <div class="avatar" style="background-image:url('${x.me?myInfo.avatar:c.avatar}')" onclick="openUserMoment('${x.me?'me':currentChat}')">
+                ${x.me?(myInfo.name[0]||'我'):c.name[0]}
+            </div>
+            <div class="msg-content">${x.content}</div>
+        </div>`).join('');
+        m.scrollTop=m.scrollHeight;
+    }
+    function sendChatMessage(){
+        const i=document.getElementById('chatInput');
+        const t=i.value.trim();
+        if(!t||!currentChat)return;
+        if(!chatRecords[currentChat])chatRecords[currentChat]=[];
+        chatRecords[currentChat].push({me:true,content:t});
+        localStorage.setItem('chatRecords',JSON.stringify(chatRecords));
+        i.value=''; renderChatMessages();
+        setTimeout(autoReply, document.getElementById('chatReplySpeed').value*1000);
+    }
+    function autoReply(){
+        const c=contacts.find(x=>x.id==currentChat);
+        const txt=c.notes[Math.floor(Math.random()*c.notes.length)];
+        chatRecords[currentChat].push({me:false,content:txt});
+        localStorage.setItem('chatRecords',JSON.stringify(chatRecords));
+        renderChatMessages();
+    }
 
-// 自动回复 + 主动发消息 + 连续发多条
-function autoReply(){
-  let c = contacts.find(x=>x.id==currentCid)
-  let count = Math.floor(Math.random()*3)+1
-  for(let i=0;i<count;i++){
+    function toggleStickers(){
+        const p=document.getElementById('stickerPanel');
+        p.style.display = p.style.display==='none'?'grid':'none';
+        renderStickers();
+    }
+    function pickSticker(){
+        const i=document.createElement('input');i.type='file';i.accept='image/*';
+        i.onchange=e=>{stickers.push(URL.createObjectURL(e.target.files[0]));localStorage.setItem('stickers',JSON.stringify(stickers));renderStickers()}
+        i.click();
+    }
+    function renderStickers(){
+        document.getElementById('stickerPanel').innerHTML=stickers.map(u=>`
+        <div class="sticker-item" onclick="sendSticker('${u}')"><img src="${u}"></div>`).join('');
+    }
+    function sendSticker(u){
+        if(!currentChat)return;
+        if(!chatRecords[currentChat])chatRecords[currentChat]=[];
+        chatRecords[currentChat].push({me:true,content:`<img src="${u}" style="width:120px">`});
+        localStorage.setItem('chatRecords',JSON.stringify(chatRecords));
+        renderChatMessages();
+        setTimeout(autoReply, document.getElementById('chatReplySpeed').value*1000);
+    }
+
+    function renderMoments(){
+        const list=document.getElementById('momentList');
+        let f = currentViewUserId ? moments.filter(m=>m.authorId==currentViewUserId) : moments;
+        list.innerHTML = f.map(m=>{
+            const a = m.authorId==='me' ? myInfo : contacts.find(c=>c.id==m.authorId);
+            return `
+            <div class="moment-item">
+                <div class="moment-author">
+                    <div class="avatar" style="background-image:url('${a.avatar}')">${a.name[0]}</div>
+                    <div><div class="contact-name">${a.name}</div><div class="contact-status"></div></div>
+                </div>
+                <div class="moment-content">${m.content}</div>
+                <div class="moment-actions">
+                    <span onclick="likeMoment(${m.id})">👍 ${m.likes}</span>
+                    <span onclick="openCommentModal(${m.id})">💬 ${m.comments.length}</span>
+                </div>
+                ${m.comments.map(c=>{
+                    const ca=c.authorId==='me'?myInfo:contacts.find(cc=>cc.id==c.authorId);
+                    return `<div class="comment-item"><b>${ca.name}</b>：${c.text}</div>`;
+                }).join('')}
+            </div>`;
+        }).join('');
+    }
+    function openPostMomentModal(){ document.getElementById('postMomentModal').style.display='flex' }
+    function closePostMomentModal(){ document.getElementById('postMomentModal').style.display='none' }
+    function postMoment(){
+    const t=document.getElementById('momentContent').value.trim();
+    if(!t)return;
+    const mid = Date.now();
+    moments.push({id:mid,authorId:'me',content:t,likes:0,comments:[]});
+    localStorage.setItem('moments',JSON.stringify(moments));
+    renderMoments();
+    closePostMomentModal();
+
+    // 自动点赞
     setTimeout(()=>{
-      let txt = c.notes[Math.floor(Math.random()*c.notes.length)]
-      chatRecords[currentCid].push({me:false,content:txt})
-      localStorage.setItem('chatRecords',JSON.stringify(chatRecords))
-      renderMsg()
-    },i*1500)
-  }
-}
+        const moment = moments.find(m=>m.id==mid);
+        if(moment){
+            moment.likes += 1;
+            localStorage.setItem('moments',JSON.stringify(moments));
+            renderMoments();
+        }
+    }, 800);
 
-// 表情包面板
-function toggleStickers(){
-  let p = document.getElementById('stickerPanel')
-  p.style.display = p.style.display=='none'?'grid':'none'
-  renderStickers()
-}
+    // 自动评论（从你的字条里随机抽）
+    setTimeout(()=>{
+        const moment = moments.find(m=>m.id==mid);
+        if(!moment) return;
+        const contact = contacts[0];
+        if(!contact || !contact.notes || contact.notes.length === 0) return;
 
-// 相册导入表情包
-function pickSticker(){
-  let i = document.createElement('input')
-  i.type='file'
-  i.accept='image/*'
-  i.onchange=e=>{
-    let f = e.target.files[0]
-    if(!f)return
-    let u = URL.createObjectURL(f)
-    stickers.push(u)
-    localStorage.setItem('stickers',JSON.stringify(stickers))
-    renderStickers()
-  }
-  i.click()
-}
+        const texts = contact.notes.filter(s => s && s.trim());
+        if(texts.length === 0) return;
+        const commentText = texts[Math.floor(Math.random() * texts.length)];
 
-function renderStickers(){
-  let p = document.getElementById('stickerPanel')
-  p.innerHTML = stickers.map(u=>`
-    <div class="sticker-item" onclick="sendSticker('${u}')"><img src="${u}" style="width:100%;height:100%;object-fit:cover;border-radius:12px"></div>
-  `).join('')
-}
+        moment.comments.push({
+            authorId: contact.id,
+            text: commentText
+        });
+        localStorage.setItem('moments',JSON.stringify(moments));
+        renderMoments();
+    }, 1500);
+    }
+    function likeMoment(mid){
+        const m=moments.find(x=>x.id==mid);m.likes++;
+        localStorage.setItem('moments',JSON.stringify(moments));renderMoments();
+    }
+    function openCommentModal(mid){ currentMomentId=mid; document.getElementById('commentModal').style.display='flex' }
+    function closeCommentModal(){ document.getElementById('commentModal').style.display='none' }
+    function submitComment(){
+        const t=document.getElementById('commentText').value.trim();
+        if(!t||!currentMomentId)return;
+        const m=moments.find(x=>x.id==currentMomentId);
+        m.comments.push({authorId:'me',text:t});
+        localStorage.setItem('moments',JSON.stringify(moments));
+        renderMoments(); closeCommentModal();
+    }
 
-// 发送表情包
-function sendSticker(url){
-  if(!currentCid)return
-  if(!chatRecords[currentCid])chatRecords[currentCid]=[]
-  chatRecords[currentCid].push({me:true,content:`<img src="${url}" style="width:120px;border-radius:12px">`})
-  localStorage.setItem('chatRecords',JSON.stringify(chatRecords))
-  renderMsg()
-  setTimeout(autoReply,1000)
-}
+    function getNowTimeStr(){
+        const d=new Date();
+        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    }
+    function sendLetter(){
+        const content=document.getElementById('letterInput').value.trim();
+        if(!content)return;
+        letterHistory.unshift({type:'out',content,time:getNowTimeStr()});
+        localStorage.setItem('letterHistory',JSON.stringify(letterHistory));
+        document.getElementById('letterInput').value='';
+        renderLetterHistory();
+        setTimeout(()=>{
+            const txt=contacts[0].notes[Math.floor(Math.random()*contacts[0].notes.length)];
+            letterHistory.unshift({type:'in',content:txt,time:getNowTimeStr()});
+            localStorage.setItem('letterHistory',JSON.stringify(letterHistory));
+            renderLetterHistory();
+        }, document.getElementById('letterReplyTime').value * 60 * 1000);
+    }
+    function renderLetterHistory(){
+        document.getElementById('letterHistory').innerHTML=letterHistory.map(i=>`
+        <div class="letter-item ${i.type==='out'?'letter-out':'letter-in'}">
+            <div>${i.content}</div>
+            <div class="letter-time">${i.time}</div>
+        </div>`).join('');
+    }
+    function toggleLetterHistory(){
+        const b=document.getElementById('letterHistory');
+        b.style.display = b.style.display==='block'?'none':'block';
+        renderLetterHistory();
+    }
 
-showPage('mainPage')
+    const tarotCards = [
+        {name:'愚者',meaning:'新的开始，勇敢前行'},
+        {name:'魔术师',meaning:'创造力与机会'},
+        {name:'女祭司',meaning:'直觉与智慧'},
+        {name:'女皇',meaning:'丰收与温柔'},
+        {name:'皇帝',meaning:'责任与掌控'},
+        {name:'恋人',meaning:'爱情与选择'},
+        {name:'战车',meaning:'胜利与坚持'},
+        {name:'力量',meaning:'勇气与温柔'},
+        {name:'隐士',meaning:'思考与独处'},
+        {name:'命运之轮',meaning:'转机到来'},
+        {name:'正义',meaning:'公平与抉择'},
+        {name:'吊人',meaning:'换个角度看世界'},
+        {name:'死神',meaning:'结束即是新生'},
+        {name:'节制',meaning:'平衡与耐心'},
+        {name:'恶魔',meaning:'挣脱束缚'},
+        {name:'塔',meaning:'意外与突破'},
+        {name:'星星',meaning:'希望与光明'},
+        {name:'月亮',meaning:'不安与幻觉'},
+        {name:'太阳',meaning:'温暖成功快乐'},
+        {name:'审判',meaning:'觉醒与重生'},
+        {name:'世界',meaning:'圆满完成'}
+    ];
+    function chooseTarotCount(n){
+        selectedTarotCount=n;
+        document.querySelectorAll('.count-btn').forEach(b=>b.classList.remove('active'));
+        event.target.classList.add('active');
+    }
+    function drawTarot(){
+        const q=document.getElementById('tarotQuestion').value;
+        if(!q){alert('请输入问题');return;}
+        let res='';
+        let list=[];
+        for(let i=0;i<selectedTarotCount;i++){
+            const c=tarotCards[Math.floor(Math.random()*tarotCards.length)];
+            list.push(c);
+        }
+        list.forEach((c,i)=>{
+            res+=`【第${i+1}张：${c.name}】\n${c.meaning}\n\n`;
+        });
+        document.getElementById('tarotResult').innerText=res.trim();
+        document.getElementById('tarotResult').style.display='block';
+    }
+
+    // 恢复原版设置逻辑
+    function setMyAvatar(){
+        const f=document.getElementById('myAvatarFile').files[0];
+        if(f){myInfo.avatar=URL.createObjectURL(f);localStorage.setItem('myInfo',JSON.stringify(myInfo));}
+    }
+    function setBgImage(){
+        const f=document.getElementById('bgFile').files[0];
+        if(f)document.body.style.background=`url(${URL.createObjectURL(f)})`;
+    }
+    function setChatBgImage(){
+        const f=document.getElementById('chatBgFile').files[0];
+        if(f)document.querySelector('.chat-messages').style.background=`url(${URL.createObjectURL(f)})`;
+    }
+
+    showPage('mainPage');
 </script>
 </body>
 </html>
