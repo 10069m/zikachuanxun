@@ -267,8 +267,13 @@
         <textarea class="setting-input" id="batchNotes" rows="4" placeholder="输入字条，每行一句"></textarea>
         <button class="modal-btn confirm" style="margin-top: 8px;" onclick="batchAddNotes()">✅ 确认添加</button>
     </div>
+    <!-- 新增：导入JSON字卡 -->
+    <div class="setting-item">
+        <div class="setting-label">导入JSON字卡文件</div>
+        <input type="file" id="jsonFileInput" accept=".json" style="margin-top:8px;">
+        <button class="modal-btn confirm" style="margin-top:8px;" onclick="importJsonNotes()">📥 导入字卡</button>
+    </div>
 </div>
-
 <script>
     let myInfo = { id:'me', name:'我' };
     let contacts = JSON.parse(localStorage.getItem('contacts')) || [{
