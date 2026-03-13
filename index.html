@@ -745,7 +745,7 @@
         document.querySelectorAll('.count-btn').forEach(b=>b.classList.remove('active'));
         event.target.classList.add('active');
     }
-    function drawTarot(){
+function drawTarot(){
         const q=document.getElementById('tarotQuestion').value;
         if(!q){alert('请输入问题');return;}
         let res='';
@@ -755,4 +755,8 @@
             list.push(c);
         }
         list.forEach((c,i)=>{
-           
+            res+=`【第${i+1}张：${c.name}】\n${c.meaning}\n\n`;
+        });
+        document.getElementById('tarotResult').innerText=res.trim();
+        document.getElementById('tarotResult').style.display='block';
+    }
