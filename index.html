@@ -409,6 +409,21 @@
     </div>
 </div>
 
+<!-- 字条库管理弹窗 -->
+<div class="modal" id="noteLibraryModal">
+    <div class="modal-content" style="max-width: 500px; max-height: 80vh; overflow-y: auto;">
+        <div class="modal-title">📝 字条库管理</div>
+        <div id="noteList" style="margin-bottom: 15px;"></div>
+        <div class="form-item">
+            <textarea class="form-input" id="newNoteInput" rows="2" placeholder="添加新字条..."></textarea>
+        </div>
+        <div class="modal-buttons">
+            <button class="modal-btn confirm" onclick="addNewNote()">➕ 添加</button>
+            <button class="modal-btn cancel" onclick="closeNoteLibrary()">关闭</button>
+        </div>
+    </div>
+</div>
+
 <div class="page" id="tarotPage">
     <div class="page-header">
         <button class="back-btn" onclick="showPage('mainPage')">←</button>
@@ -423,7 +438,6 @@
     <div class="tarot-result" id="tarotResult" style="display:none;white-space:pre-line"></div>
 </div>
 
-<!-- 这里恢复成你原来的设置页面 ↓↓↓ -->
 <div class="page" id="settingPage">
     <div class="page-header">
         <button class="back-btn" onclick="showPage('mainPage')">←</button>
@@ -456,10 +470,14 @@
     <div class="setting-item">
         <div class="setting-label">批量添加字条（一行一句）</div>
         <textarea class="setting-input" id="batchNotes" rows="4" placeholder="输入字条，每行一句"></textarea>
+        <button class="modal-btn confirm" style="margin-top: 8px;" onclick="batchAddNotes()">✅ 确认添加</button>
     </div>
     <div class="setting-item">
         <div class="setting-label">导入JSON字条</div>
         <input type="file" id="jsonFile" accept=".json">
+    </div>
+    <div class="setting-item">
+        <button class="add-contact-btn" onclick="showNoteLibrary()">📝 查看/管理字条库</button>
     </div>
 </div>
 
@@ -472,6 +490,7 @@
     let chatRecords = JSON.parse(localStorage.getItem('chatRecords')) || {};
     let stickers = JSON.parse(localStorage.getItem('stickers')) || [];
     let letterHistory = JSON.parse(localStorage.getItem('letterHistory')) || [];
+    let notes = JSON.parse(localStorage.getItem('notes')) || ['收到你的信啦', '我一直在', '晚安'];
 
     let currentChat = null;
     let currentViewUserId = null;
@@ -526,7 +545,7 @@
             avatar:f?URL.createObjectURL(f):'',
             persona:document.getElementById('contactPersona').value,
             status:document.getElementById('contactStatus').value,
-            notes:['我在呢','晚安','想你']
+            notes:[...notes]
         });
         localStorage.setItem('contacts',JSON.stringify(contacts));
         renderContacts(); closeAddContactModal();
@@ -619,42 +638,38 @@
     function openPostMomentModal(){ document.getElementById('postMomentModal').style.display='flex' }
     function closePostMomentModal(){ document.getElementById('postMomentModal').style.display='none' }
     function postMoment(){
-    const t=document.getElementById('momentContent').value.trim();
-    if(!t)return;
-    const mid = Date.now();
-    moments.push({id:mid,authorId:'me',content:t,likes:0,comments:[]});
-    localStorage.setItem('moments',JSON.stringify(moments));
-    renderMoments();
-    closePostMomentModal();
-
-    // 自动点赞
-    setTimeout(()=>{
-        const moment = moments.find(m=>m.id==mid);
-        if(moment){
-            moment.likes += 1;
-            localStorage.setItem('moments',JSON.stringify(moments));
-            renderMoments();
-        }
-    }, 800);
-
-    // 自动评论（从你的字条里随机抽）
-    setTimeout(()=>{
-        const moment = moments.find(m=>m.id==mid);
-        if(!moment) return;
-        const contact = contacts[0];
-        if(!contact || !contact.notes || contact.notes.length === 0) return;
-
-        const texts = contact.notes.filter(s => s && s.trim());
-        if(texts.length === 0) return;
-        const commentText = texts[Math.floor(Math.random() * texts.length)];
-
-        moment.comments.push({
-            authorId: contact.id,
-            text: commentText
-        });
+        const t=document.getElementById('momentContent').value.trim();
+        if(!t)return;
+        const mid = Date.now();
+        moments.push({id:mid,authorId:'me',content:t,likes:0,comments:[]});
         localStorage.setItem('moments',JSON.stringify(moments));
         renderMoments();
-    }, 1500);
+        closePostMomentModal();
+
+        setTimeout(()=>{
+            const moment = moments.find(m=>m.id==mid);
+            if(moment){
+                moment.likes += 1;
+                localStorage.setItem('moments',JSON.stringify(moments));
+                renderMoments();
+            }
+        }, 800);
+
+        setTimeout(()=>{
+            const moment = moments.find(m=>m.id==mid);
+            if(!moment) return;
+            const contact = contacts[0];
+            if(!contact || !contact.notes || contact.notes.length === 0) return;
+            const texts = contact.notes.filter(s => s && s.trim());
+            if(texts.length === 0) return;
+            const commentText = texts[Math.floor(Math.random() * texts.length)];
+            moment.comments.push({
+                authorId: contact.id,
+                text: commentText
+            });
+            localStorage.setItem('moments',JSON.stringify(moments));
+            renderMoments();
+        }, 1500);
     }
     function likeMoment(mid){
         const m=moments.find(x=>x.id==mid);m.likes++;
@@ -740,27 +755,4 @@
             list.push(c);
         }
         list.forEach((c,i)=>{
-            res+=`【第${i+1}张：${c.name}】\n${c.meaning}\n\n`;
-        });
-        document.getElementById('tarotResult').innerText=res.trim();
-        document.getElementById('tarotResult').style.display='block';
-    }
-
-    // 恢复原版设置逻辑
-    function setMyAvatar(){
-        const f=document.getElementById('myAvatarFile').files[0];
-        if(f){myInfo.avatar=URL.createObjectURL(f);localStorage.setItem('myInfo',JSON.stringify(myInfo));}
-    }
-    function setBgImage(){
-        const f=document.getElementById('bgFile').files[0];
-        if(f)document.body.style.background=`url(${URL.createObjectURL(f)})`;
-    }
-    function setChatBgImage(){
-        const f=document.getElementById('chatBgFile').files[0];
-        if(f)document.querySelector('.chat-messages').style.background=`url(${URL.createObjectURL(f)})`;
-    }
-
-    showPage('mainPage');
-</script>
-</body>
-</html>
+           
