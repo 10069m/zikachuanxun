@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>梦女传讯站 · 字卡幻境</title>
+    <title>梦女传讯站 · 全感幻境</title>
     <!-- Font Awesome 6 (免费) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- 清新风格 手写体点缀 -->
     <style>
         * {
             margin: 0;
@@ -36,7 +35,6 @@
             display: flex;
             flex-direction: column;
         }
-        /* 主界面 / 各个模块切换 */
         .app-screen {
             flex: 1;
             overflow-y: auto;
@@ -47,7 +45,6 @@
             -webkit-backdrop-filter: blur(10px);
             transition: background 0.3s;
         }
-        /* 顶部时间日期 */
         .top-time {
             text-align: center;
             margin-bottom: 6px;
@@ -68,7 +65,6 @@
             border-bottom: 1px dashed #deb0cb;
             padding-bottom: 20px;
         }
-        /* 两行两列图标 */
         .icon-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -98,7 +94,6 @@
             color: #7c4f6e;
             letter-spacing: 1px;
         }
-        /* 模块通用头部 */
         .module-header {
             display: flex;
             align-items: center;
@@ -124,11 +119,9 @@
             font-weight: 320;
             color: #6d3f5e;
         }
-        /* 隐藏其他模块 */
         .hidden {
             display: none !important;
         }
-        /* 写信板块样式 (聊天窗) */
         .chat-box {
             background: #fef9fb;
             border-radius: 32px;
@@ -188,7 +181,6 @@
             color: #5d3b4e;
             font-weight: 500;
         }
-        /* 通讯/微信样式 */
         .wechat-tabs {
             display: flex;
             gap: 15px;
@@ -211,6 +203,8 @@
             background: #fdf1f7e0;
             border-radius: 30px;
             padding: 12px;
+            max-height: 350px;
+            overflow-y: auto;
         }
         .contact-item {
             display: flex;
@@ -218,6 +212,7 @@
             gap: 15px;
             padding: 12px;
             border-bottom: 1px solid #ffd9ea;
+            cursor: pointer;
         }
         .avatar {
             width: 50px;
@@ -229,6 +224,7 @@
             justify-content: center;
             overflow: hidden;
             font-size: 1.8rem;
+            flex-shrink: 0;
         }
         .avatar img {
             width: 100%;
@@ -247,51 +243,59 @@
             border-radius: 25px;
             padding: 15px;
             margin-bottom: 15px;
+            box-shadow: 0 3px 10px #fad1e2;
         }
         .post-header {
             display: flex;
             gap: 12px;
             align-items: center;
+            margin-bottom: 8px;
         }
         .post-content {
             margin: 10px 0;
+            font-size: 1rem;
+            line-height: 1.4;
+            word-break: break-word;
         }
-        .post-actions i {
-            margin-right: 20px;
+        .post-actions {
+            display: flex;
+            gap: 25px;
+            margin-top: 10px;
             color: #b68ca5;
         }
-        /* 塔罗简单样式 */
-        .tarot-input {
-            width: 100%;
-            padding: 15px;
-            border-radius: 30px;
-            border: none;
-            background: #fff5fb;
-            margin: 20px 0;
+        .post-actions i {
+            font-size: 1.2rem;
+            cursor: pointer;
         }
-        .card-choice {
+        .post-actions span {
+            margin-left: 5px;
+            font-size: 0.9rem;
+        }
+        .comments-section {
+            margin-top: 15px;
+            border-top: 1px dashed #eebcd6;
+            padding-top: 10px;
+            font-size: 0.9rem;
+        }
+        .comment-item {
             display: flex;
-            gap: 20px;
-            margin: 15px 0;
+            gap: 6px;
+            margin-bottom: 6px;
         }
-        .card-slot {
-            background: #ecd3e3;
-            width: 80px;
-            height: 120px;
-            border-radius: 15px;
+        .comment-name {
+            font-weight: 600;
+            color: #a54d7a;
+        }
+        .post-toolbar {
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 5px 0 #b48ba7;
-            color: #5b3f50;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 6px;
         }
-        /* 设置面板 */
-        .setting-item {
-            background: #ffecf3d0;
-            border-radius: 28px;
-            padding: 18px;
-            margin-bottom: 15px;
+        .post-toolbar i {
+            cursor: pointer;
+            color: #9f6e8a;
+            font-size: 1rem;
         }
         .btn {
             background: #eed0e1;
@@ -301,8 +305,42 @@
             margin: 5px;
             color: #4e2f41;
             font-weight: 500;
+            cursor: pointer;
         }
-        /* 字条库管理 */
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.2);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-card {
+            background: #fff5fc;
+            border-radius: 42px;
+            padding: 25px;
+            width: 300px;
+            box-shadow: 0 20px 30px #d9a6c0;
+        }
+        .modal-card input, .modal-card textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 30px;
+            border: 1px solid #fcc7e2;
+            background: white;
+        }
+        .flex-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
         .phrase-bank {
             background: white;
             border-radius: 20px;
@@ -327,84 +365,46 @@
 <body>
 <div class="phone-frame" id="app">
 
-    <!-- 主界面(默认显示) -->
+    <!-- 主界面 -->
     <div id="home-screen" class="app-screen">
         <div class="top-time">
             <div class="time-large" id="liveTime">20:24</div>
             <div class="date-md" id="liveDate">2069年7月7日 周二</div>
         </div>
         <div class="icon-grid">
-            <div class="icon-card" data-module="write">
-                <i class="fas fa-feather-alt"></i>
-                <span>写信</span>
-            </div>
-            <div class="icon-card" data-module="wechat">
-                <i class="fas fa-comment-dots"></i>
-                <span>通讯</span>
-            </div>
-            <div class="icon-card" data-module="tarot">
-                <i class="fas fa-crystal-ball"></i>
-                <span>塔罗</span>
-            </div>
-            <div class="icon-card" data-module="settings">
-                <i class="fas fa-sliders-h"></i>
-                <span>设置</span>
-            </div>
+            <div class="icon-card" data-module="write"><i class="fas fa-feather-alt"></i><span>写信</span></div>
+            <div class="icon-card" data-module="wechat"><i class="fas fa-comment-dots"></i><span>通讯</span></div>
+            <div class="icon-card" data-module="tarot"><i class="fas fa-crystal-ball"></i><span>塔罗</span></div>
+            <div class="icon-card" data-module="settings"><i class="fas fa-sliders-h"></i><span>设置</span></div>
         </div>
-        <footer>🌸 梦女字卡 · 只对你传讯 🌸</footer>
+        <footer>🌸 梦女字卡 · 全感幻境 🌸</footer>
     </div>
 
     <!-- 写信模块 -->
     <div id="write-module" class="app-screen hidden">
-        <div class="module-header">
-            <button class="back-btn" data-back><i class="fas fa-arrow-left"></i></button>
-            <div class="module-title">给他的信</div>
-        </div>
-        <div class="chat-box" id="writeChatBox">
-            <!-- 动态消息 -->
-            <div class="message other">✨ 我在呢，想说什么？ ✨<div class="msg-time">刚刚</div></div>
-        </div>
-        <div class="chat-input-area">
-            <input type="text" id="writeInput" placeholder="写点什么...">
-            <button id="sendWriteMsg"><i class="fas fa-paper-plane"></i> 寄出</button>
-        </div>
+        <div class="module-header"><button class="back-btn" data-back><i class="fas fa-arrow-left"></i></button><div class="module-title">给他的信</div></div>
+        <div class="chat-box" id="writeChatBox"></div>
+        <div class="chat-input-area"><input type="text" id="writeInput" placeholder="写点什么..."><button id="sendWriteMsg"><i class="fas fa-paper-plane"></i> 寄出</button></div>
         <div style="display: flex; gap:6px; margin-top: 8px;">
             <button class="btn" id="aiReplyBtn"><i class="fas fa-robot"></i> AI回信(模拟)</button>
             <button class="btn" id="activeWriteBtn"><i class="fas fa-envelope-open-text"></i> 对方主动写信</button>
         </div>
-        <p style="color:#ba7b9f; padding:6px;">💌 写信/回信AI: 从字条库随机生成(模拟AI)</p>
+        <p style="color:#ba7b9f; padding:6px;">💌 模拟AI从字条库随机生成</p>
     </div>
 
     <!-- 通讯模块 (微信风格) -->
     <div id="wechat-module" class="app-screen hidden">
-        <div class="module-header">
-            <button class="back-btn" data-back><i class="fas fa-arrow-left"></i></button>
-            <div class="module-title">梦信</div>
-        </div>
+        <div class="module-header"><button class="back-btn" data-back><i class="fas fa-arrow-left"></i></button><div class="module-title">梦信</div></div>
         <div class="wechat-tabs">
             <div class="tab active" data-wctab="chat">聊天</div>
             <div class="tab" data-wctab="contacts">联系人</div>
             <div class="tab" data-wctab="moments">朋友圈</div>
         </div>
-        <!-- 聊天面板 (简化，显示当前联系人对话) -->
+        <!-- 聊天面板 -->
         <div id="wc-chat-panel">
-            <div class="contacts-list" style="max-height:200px">
-                <div class="contact-item" data-contact="0">
-                    <div class="avatar"><i class="fas fa-user-astronaut"></i></div>
-                    <div><h4>白泽君</h4><p>状态: 雨天·思念</p></div>
-                </div>
-                <div class="contact-item" data-contact="1">
-                    <div class="avatar"><i class="fas fa-cat"></i></div>
-                    <div><h4>鹿灵</h4><p>状态: 晴天·调皮</p></div>
-                </div>
-            </div>
-            <div class="chat-box" id="wcChatBox" style="height:200px;">
-                <div class="message other">✨ 你来啦~<div class="msg-time">14:20</div></div>
-            </div>
-            <div class="chat-input-area">
-                <input id="wcMsgInput" placeholder="回复...">
-                <button id="sendWcMsg"><i class="fas fa-paper-plane"></i></button>
-            </div>
+            <div class="contacts-list" style="max-height:200px" id="wcChatContactList"></div>
+            <div class="chat-box" id="wcChatBox" style="height:200px;"></div>
+            <div class="chat-input-area"><input id="wcMsgInput" placeholder="回复..."><button id="sendWcMsg"><i class="fas fa-paper-plane"></i></button></div>
             <div style="display: flex; flex-wrap: wrap; gap:4px; margin-top:6px">
                 <button class="btn" id="addEmojiBtn"><i class="fas fa-face-smile"></i> 表情包(相册)</button>
                 <input type="file" id="emojiUpload" accept="image/*" style="display:none;">
@@ -412,31 +412,25 @@
                 <button class="btn" id="contactActiveMsg">💬 联系人主动发消息</button>
             </div>
         </div>
-        <!-- 联系人面板(隐藏) -->
+        <!-- 联系人面板 -->
         <div id="wc-contacts-panel" class="hidden">
-            <button class="btn" id="addContactBtn"><i class="fas fa-user-plus"></i> 添加联系人(预设)</button>
+            <button class="btn" id="showAddContactFormBtn"><i class="fas fa-user-plus"></i> 添加联系人(自定义)</button>
             <div class="contacts-list" id="contactsListFull"></div>
         </div>
-        <!-- 朋友圈面板(隐藏) -->
+        <!-- 朋友圈面板 -->
         <div id="wc-moments-panel" class="hidden">
             <button class="btn" id="postMomentBtn"><i class="fas fa-camera"></i> 发朋友圈(自己)</button>
             <button class="btn" id="aiGenMomentBtn"><i class="fas fa-robot"></i> 联系人自动发圈(根据状态)</button>
             <div class="friends-posts" id="momentFeed"></div>
         </div>
-        <p style="color:#a2738e;font-size:0.7rem;">* 联系人回消息只能随机字条(不AI)，可传图做表情</p>
+        <p style="color:#a2738e;font-size:0.7rem;">* 联系人回消息随机字条(不AI)，可传图做表情</p>
     </div>
 
     <!-- 塔罗模块 -->
     <div id="tarot-module" class="app-screen hidden">
-        <div class="module-header">
-            <button class="back-btn" data-back><i class="fas fa-arrow-left"></i></button>
-            <div class="module-title">塔罗耳语</div>
-        </div>
+        <div class="module-header"><button class="back-btn" data-back><i class="fas fa-arrow-left"></i></button><div class="module-title">塔罗耳语</div></div>
         <input class="tarot-input" id="tarotQuestion" placeholder="输入你的问题...">
-        <div class="card-choice">
-            <label><input type="radio" name="cardNum" value="1" checked> 单张牌</label>
-            <label><input type="radio" name="cardNum" value="3"> 三张牌</label>
-        </div>
+        <div class="card-choice"><label><input type="radio" name="cardNum" value="1" checked> 单张牌</label><label><input type="radio" name="cardNum" value="3"> 三张牌</label></div>
         <button class="btn" id="drawTarotBtn">✨ 抽牌 ✨</button>
         <div id="tarotCardsArea" style="display:flex; gap:15px; margin:20px 0; justify-content:center;"></div>
         <div id="tarotInterpret" style="background:#f4e2ed; border-radius:25px; padding:15px;"></div>
@@ -444,13 +438,10 @@
 
     <!-- 设置模块 -->
     <div id="settings-module" class="app-screen hidden">
-        <div class="module-header">
-            <button class="back-btn" data-back><i class="fas fa-arrow-left"></i></button>
-            <div class="module-title">字卡·调频</div>
-        </div>
+        <div class="module-header"><button class="back-btn" data-back><i class="fas fa-arrow-left"></i></button><div class="module-title">字卡·调频</div></div>
         <div class="setting-item">
             <h4>📁 字条库管理 (一行一句)</h4>
-            <textarea id="phraseTextarea" rows="4" style="width:100%; border-radius:20px; padding:10px;">在吗？&#10;我想你了✨&#10;今天好美&#10;梦里有你&#10;要开心哦</textarea>
+            <textarea id="phraseTextarea" rows="4" style="width:100%; border-radius:20px; padding:10px;"></textarea>
             <button class="btn" id="savePhrases">保存修改</button>
             <button class="btn" id="importJsonBtn">导入json文件</button>
             <input type="file" id="jsonImportFile" accept="application/json" style="display:none;">
@@ -469,25 +460,31 @@
     </div>
 </div>
 
+<!-- 动态模态框（用于添加联系人/编辑朋友圈/评论）-->
+<div id="modalContainer" style="display:none;"></div>
+
 <script>
     (function() {
-        // ---------- 模拟数据存储 ----------
-        let phrases = ['在吗？', '我想你了✨', '今天好美', '梦里有你', '要开心哦', '忙什么呢', '抱抱', '晚安']  // 默认字条库
+        // ---------- 初始化数据 ----------
+        let phrases = ['在吗？', '我想你了✨', '今天好美', '梦里有你', '要开心哦', '忙什么呢', '抱抱', '晚安'];
+        // 联系人：id, name, avatar (可以是图标类名 或 dataURL), status, personality, mood, weather
         let contacts = [
             { id: 0, name: '白泽君', avatar: 'fas fa-user-astronaut', status: '雨天·思念', personality: '温柔神秘', mood: '思念', weather: '雨' },
             { id: 1, name: '鹿灵', avatar: 'fas fa-cat', status: '晴天·调皮', personality: '活泼', mood: '调皮', weather: '晴' }
-        ]
+        ];
+        // 朋友圈：id, contactId (或 'self'), content, time, likes (人数), likedBySelf (布尔), comments: [{ contactId/self, text }]
         let moments = [
-            { id: 0, contactId: 0, content: '下雨了，空气里有你的味道。', time: '1小时前', likes: 3, comments: [] },
-            { id: 1, contactId: 1, content: '抓到一只蝴蝶~送给你', time: '30分钟前', likes: 5 }
-        ]
-        let chatMessages = { 0: [{ from: 'other', text: '✨ 我在呢', time: '14:20' }], 1: [{ from: 'other', text: '喵~', time: '13:10' }] }
-        let currentContact = 0  // 当前聊天联系人id
-        
-        // 写信模块单独对话
-        let writeMessages = [{ from: 'other', text: '✨ 我在呢，想说什么？', time: '刚刚' }]
+            { id: 0, contactId: 0, content: '下雨了，空气里有你的味道。', time: '1小时前', likes: 3, likedBySelf: false, comments: [{ from: 1, text: '我也闻到了' }] },
+            { id: 1, contactId: 1, content: '抓到一只蝴蝶~送给你', time: '30分钟前', likes: 5, likedBySelf: false, comments: [] }
+        ];
+        let chatMessages = { 0: [{ from: 'other', text: '✨ 我在呢', time: '14:20' }], 1: [{ from: 'other', text: '喵~', time: '13:10' }] };
+        let currentContact = 0;
+        let writeMessages = [{ from: 'other', text: '✨ 我在呢，想说什么？', time: '刚刚' }];
 
-        // 时间更新
+        // 辅助: 新ID
+        function newId(arr) { return arr.length ? Math.max(...arr.map(x=>x.id)) + 1 : 0; }
+
+        // ---------- 时间 ----------
         function updateTime() {
             const now = new Date();
             document.getElementById('liveTime').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -497,55 +494,39 @@
         updateTime();
 
         // 模块切换
-        const screens = {
-            home: document.getElementById('home-screen'),
-            write: document.getElementById('write-module'),
-            wechat: document.getElementById('wechat-module'),
-            tarot: document.getElementById('tarot-module'),
-            settings: document.getElementById('settings-module')
-        };
-        function showScreen(name) {
-            Object.values(screens).forEach(s => s.classList.add('hidden'));
-            screens[name].classList.remove('hidden');
+        const screens = { home:document.getElementById('home-screen'), write:document.getElementById('write-module'), wechat:document.getElementById('wechat-module'), tarot:document.getElementById('tarot-module'), settings:document.getElementById('settings-module') };
+        function showScreen(name) { Object.values(screens).forEach(s => s.classList.add('hidden')); screens[name].classList.remove('hidden'); }
+        document.querySelectorAll('.icon-card[data-module]').forEach(card => { card.addEventListener('click', () => showScreen(card.dataset.module)); });
+        document.querySelectorAll('[data-back]').forEach(btn => { btn.addEventListener('click', () => showScreen('home')); });
+
+        // 渲染头像 (辅助)
+        function renderAvatar(avatar, size = 50) {
+            if (avatar && avatar.startsWith('data:')) return `<img src="${avatar}" style="width:${size}px;height:${size}px; object-fit:cover;">`;
+            else return `<i class="${avatar || 'fas fa-user'}"></i>`;
         }
-        document.querySelectorAll('.icon-card[data-module]').forEach(card => {
-            card.addEventListener('click', () => showScreen(card.dataset.module));
-        });
-        document.querySelectorAll('[data-back]').forEach(btn => {
-            btn.addEventListener('click', () => showScreen('home'));
-        });
 
         // ---------- 写信模块 ----------
         const writeChat = document.getElementById('writeChatBox');
         const writeInput = document.getElementById('writeInput');
         function renderWriteChat() {
-            writeChat.innerHTML = writeMessages.map(m => 
-                `<div class="message ${m.from === 'me' ? 'me' : 'other'}">${m.text}<div class="msg-time">${m.time || '刚刚'}</div></div>`
-            ).join('');
+            writeChat.innerHTML = writeMessages.map(m => `<div class="message ${m.from === 'me' ? 'me' : 'other'}">${m.text}<div class="msg-time">${m.time || '刚刚'}</div></div>`).join('');
             writeChat.scrollTop = writeChat.scrollHeight;
         }
         document.getElementById('sendWriteMsg').addEventListener('click', () => {
-            let txt = writeInput.value.trim();
-            if (!txt) return;
-            writeMessages.push({ from: 'me', text: txt, time: '此刻' });
-            renderWriteChat();
-            writeInput.value = '';
+            let txt = writeInput.value.trim(); if (!txt) return;
+            writeMessages.push({ from: 'me', text: txt, time: '此刻' }); renderWriteChat(); writeInput.value = '';
         });
-        // AI回信 (模拟从字条库取)
         document.getElementById('aiReplyBtn').addEventListener('click', () => {
-            let randomIdx = Math.floor(Math.random() * phrases.length);
-            let reply = phrases[randomIdx] + ' (AI模拟)';
-            writeMessages.push({ from: 'other', text: reply, time: '片刻后' });
-            renderWriteChat();
+            let reply = phrases[Math.floor(Math.random() * phrases.length)] + ' (AI模拟)';
+            writeMessages.push({ from: 'other', text: reply, time: '片刻后' }); renderWriteChat();
         });
         document.getElementById('activeWriteBtn').addEventListener('click', () => {
             let activeMsg = phrases[Math.floor(Math.random() * phrases.length)] + ' (对方主动)';
-            writeMessages.push({ from: 'other', text: activeMsg, time: '主动' });
-            renderWriteChat();
+            writeMessages.push({ from: 'other', text: activeMsg, time: '主动' }); renderWriteChat();
         });
         renderWriteChat();
 
-        // ---------- 通讯模块 (微信风格 极简模拟) ----------
+        // ---------- 通讯模块 ----------
         const wcChatPanel = document.getElementById('wc-chat-panel');
         const wcContactsPanel = document.getElementById('wc-contacts-panel');
         const wcMomentsPanel = document.getElementById('wc-moments-panel');
@@ -557,41 +538,24 @@
                 wcChatPanel.classList.add('hidden');
                 wcContactsPanel.classList.add('hidden');
                 wcMomentsPanel.classList.add('hidden');
-                if (t.dataset.wctab === 'chat') wcChatPanel.classList.remove('hidden');
+                if (t.dataset.wctab === 'chat') { wcChatPanel.classList.remove('hidden'); renderChatContacts(); renderWcChat(); } 
                 else if (t.dataset.wctab === 'contacts') { wcContactsPanel.classList.remove('hidden'); renderContacts(); } 
                 else if (t.dataset.wctab === 'moments') { wcMomentsPanel.classList.remove('hidden'); renderMoments(); }
             });
         });
-        function renderContacts() {
+
+        // 聊天联系人列表（简略）
+        function renderChatContacts() {
             let html = '';
             contacts.forEach(c => {
-                html += `<div class="contact-item" data-contact="${c.id}"><div class="avatar"><i class="${c.avatar}"></i></div><div><h4>${c.name}</h4><p>${c.status}</p></div></div>`;
+                html += `<div class="contact-item" data-contact="${c.id}"><div class="avatar">${renderAvatar(c.avatar)}</div><div><h4>${c.name}</h4><p>${c.status}</p></div></div>`;
             });
-            document.getElementById('contactsListFull').innerHTML = html;
+            document.getElementById('wcChatContactList').innerHTML = html;
+            document.querySelectorAll('#wcChatContactList .contact-item').forEach(el => {
+                el.addEventListener('click', () => { currentContact = Number(el.dataset.contact); renderWcChat(); });
+            });
         }
-        function renderMoments() {
-            let feed = document.getElementById('momentFeed');
-            feed.innerHTML = moments.map(m => {
-                let contact = contacts.find(c => c.id === m.contactId) || { name: '神秘人', avatar: 'fas fa-star' };
-                return `<div class="post-card">
-                    <div class="post-header"><div class="avatar"><i class="${contact.avatar}"></i></div><b>${contact.name}</b> <span style="color:#a27b90;">${m.time}</span></div>
-                    <div class="post-content">${m.content}</div>
-                    <div class="post-actions"><i class="far fa-heart"></i> ${m.likes} <i class="far fa-comment"></i></div>
-                </div>`;
-            }).join('');
-        }
-        // 发送消息(随机字条回复)
-        document.getElementById('sendWcMsg').addEventListener('click', () => {
-            let msg = document.getElementById('wcMsgInput').value.trim();
-            if (!msg) return;
-            if (!chatMessages[currentContact]) chatMessages[currentContact] = [];
-            chatMessages[currentContact].push({ from: 'me', text: msg, time: '刚刚' });
-            // 对方自动回复随机字条 (不能AI，只能随机字条)
-            let randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
-            chatMessages[currentContact].push({ from: 'other', text: randomPhrase + ' (字条)', time: '1分钟后' });
-            document.getElementById('wcMsgInput').value = '';
-            renderWcChat();
-        });
+
         function renderWcChat() {
             let box = document.getElementById('wcChatBox');
             if (!chatMessages[currentContact]) chatMessages[currentContact] = [];
@@ -599,10 +563,22 @@
                 `<div class="message ${m.from === 'me' ? 'me' : 'other'}">${m.text}<div class="msg-time">${m.time}</div></div>`
             ).join('');
         }
-        // 添加表情包(上传图片模拟)
-        document.getElementById('addEmojiBtn').addEventListener('click', () => {
-            document.getElementById('emojiUpload').click();
+
+        // 发送消息
+        document.getElementById('sendWcMsg').addEventListener('click', () => {
+            let msg = document.getElementById('wcMsgInput').value.trim();
+            if (!msg) return;
+            if (!chatMessages[currentContact]) chatMessages[currentContact] = [];
+            chatMessages[currentContact].push({ from: 'me', text: msg, time: '刚刚' });
+            // 对方随机字条
+            let randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+            chatMessages[currentContact].push({ from: 'other', text: randomPhrase + ' (字条)', time: '1分钟后' });
+            document.getElementById('wcMsgInput').value = '';
+            renderWcChat();
         });
+
+        // 表情包
+        document.getElementById('addEmojiBtn').addEventListener('click', () => { document.getElementById('emojiUpload').click(); });
         document.getElementById('emojiUpload').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
@@ -616,103 +592,112 @@
                 reader.readAsDataURL(file);
             }
         });
-        // 对方一直发 (上限5)
+
+        // 对方一直发
         document.getElementById('autoMultiMsg').addEventListener('click', () => {
-            let count = 0;
-            let max = 5; // 可修改上限
+            let count = 0, max = 5;
             let timer = setInterval(() => {
                 if (count >= max) { clearInterval(timer); return; }
                 let randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
                 chatMessages[currentContact].push({ from: 'other', text: randomPhrase + ' (连发)', time: '连发' });
-                renderWcChat();
-                count++;
+                renderWcChat(); count++;
             }, 600);
         });
         document.getElementById('contactActiveMsg').addEventListener('click', () => {
             let r = phrases[Math.floor(Math.random() * phrases.length)] + ' (主动)';
-            chatMessages[currentContact].push({ from: 'other', text: r, time: '主动' });
-            renderWcChat();
-        });
-        document.getElementById('aiGenMomentBtn').addEventListener('click', () => {
-            // 根据状态生成朋友圈 (模拟)
-            let c = contacts[Math.floor(Math.random()*contacts.length)];
-            let newPost = { id: Date.now(), contactId: c.id, content: `今天${c.weather||'晴'}，心情${c.mood||'美好'}。想念～`, time: '刚刚', likes: 1 };
-            moments.push(newPost);
-            renderMoments();
-        });
-        document.getElementById('postMomentBtn').addEventListener('click', () => {
-            moments.push({ id: Date.now(), contactId: 'self', content: '自己发的朋友圈✨', time: '刚刚', likes: 0 });
-            renderMoments();
+            chatMessages[currentContact].push({ from: 'other', text: r, time: '主动' }); renderWcChat();
         });
 
-        // 联系人添加简单预设
-        document.getElementById('addContactBtn').addEventListener('click', () => {
-            let newId = contacts.length;
-            contacts.push({ id: newId, name: '新灵伴', avatar: 'fas fa-dove', status: '微风·期待', mood: '期待', weather: '微风' });
-            renderContacts();
-        });
-
-        // ---------- 塔罗模块 ----------
-        document.getElementById('drawTarotBtn').addEventListener('click', () => {
-            let num = document.querySelector('input[name="cardNum"]:checked').value;
-            let cardsArea = document.getElementById('tarotCardsArea');
-            cardsArea.innerHTML = '';
-            for (let i=0; i<num; i++) {
-                let card = document.createElement('div');
-                card.className = 'card-slot';
-                card.innerHTML = `<i class="fas fa-star"></i><span>牌${i+1}</span><small>逆位</small>`;
-                cardsArea.appendChild(card);
-            }
-            let interprets = ['充满可能', '需要耐心', '新的相遇', '旧事重现'];
-            document.getElementById('tarotInterpret').innerText = '🔮 AI解读：' + interprets[Math.floor(Math.random()*interprets.length)] + ' (模拟)';
-        });
-
-        // ---------- 设置模块 ----------
-        const phraseTextarea = document.getElementById('phraseTextarea');
-        const phraseBankView = document.getElementById('phraseBankView');
-        function refreshPhraseBank() {
-            phraseTextarea.value = phrases.join('\n');
-            phraseBankView.innerHTML = phrases.map(p => `<div class="phrase-item">📄 ${p} <i class="far fa-trash-alt" data-phrase="${p}"></i></div>`).join('');
+        // ---------- 联系人管理 (新增自定义) ----------
+        function renderContacts() {
+            let html = '';
+            contacts.forEach(c => {
+                html += `<div class="contact-item" data-contact="${c.id}">
+                    <div class="avatar">${renderAvatar(c.avatar)}</div>
+                    <div class="contact-info"><h4>${c.name}</h4><p>${c.status || '✨'}</p></div>
+                </div>`;
+            });
+            document.getElementById('contactsListFull').innerHTML = html;
         }
-        document.getElementById('savePhrases').addEventListener('click', () => {
-            phrases = phraseTextarea.value.split('\n').map(s=>s.trim()).filter(s=>s.length>0);
-            refreshPhraseBank();
-        });
-        document.getElementById('importJsonBtn').addEventListener('click', () => {
-            document.getElementById('jsonImportFile').click();
-        });
-        document.getElementById('jsonImportFile').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                try {
-                    let arr = JSON.parse(ev.target.result);
-                    if (Array.isArray(arr)) phrases = arr;
-                    refreshPhraseBank();
-                } catch { alert('json格式不对'); }
-            };
-            reader.readAsText(file);
-        });
-        phraseBankView.addEventListener('click', (e) => {
-            if (e.target.classList.contains('fa-trash-alt')) {
-                let del = e.target.parentElement.dataset.phrase;
-                phrases = phrases.filter(p => p !== del);
-                refreshPhraseBank();
-            }
-        });
-        document.getElementById('applySettings').addEventListener('click', () => {
-            let homeColor = document.getElementById('homeBgColor').value;
-            document.querySelector('.phone-frame').style.background = homeColor;
-            let bubbleMe = document.getElementById('bubbleMe').value;
-            document.styleSheets[0].insertRule(`.me { background-color: ${bubbleMe} !important; }`, 0);
-            let fontSize = document.getElementById('fontSizeOther').value + 'px';
-            document.styleSheets[0].insertRule(`.other { font-size: ${fontSize}; }`, 0);
-        });
-        refreshPhraseBank();
 
-        // 初始化聊天视图
-        renderWcChat();
-    })();
-</script>
-</body>
-</html>
+        // 显示添加联系人表单
+        document.getElementById('showAddContactFormBtn').addEventListener('click', () => {
+            let modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-card">
+                    <h3>✨ 新联系人</h3>
+                    <input type="text" id="modalContactName" placeholder="名字" value="新朋友">
+                    <div class="flex-row"><span>头像上传:</span><input type="file" id="modalContactAvatar" accept="image/*"></div>
+                    <input type="text" id="modalContactStatus" placeholder="状态 (例如: 晴天·温柔)" value="晴·温柔">
+                    <div style="display:flex; gap:10px; margin-top:15px;">
+                        <button class="btn btn-small" id="modalSaveContact">保存</button>
+                        <button class="btn btn-small" id="modalClose">取消</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            document.getElementById('modalClose').addEventListener('click', () => modal.remove());
+            document.getElementById('modalSaveContact').addEventListener('click', () => {
+                let name = document.getElementById('modalContactName').value.trim() || '无名';
+                let status = document.getElementById('modalContactStatus').value.trim() || '✨';
+                let file = document.getElementById('modalContactAvatar').files[0];
+                if (file) {
+                    let reader = new FileReader();
+                    reader.onload = (e) => {
+                        let newContact = { id: contacts.length, name: name, avatar: e.target.result, status: status, personality: '', mood: '', weather: '' };
+                        contacts.push(newContact);
+                        chatMessages[newContact.id] = []; // 初始化聊天
+                        renderContacts(); renderChatContacts(); modal.remove();
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    let newContact = { id: contacts.length, name: name, avatar: 'fas fa-user', status: status, personality: '', mood: '', weather: '' };
+                    contacts.push(newContact);
+                    chatMessages[newContact.id] = [];
+                    renderContacts(); renderChatContacts(); modal.remove();
+                }
+            });
+        });
+
+        // ---------- 朋友圈 ----------
+        function renderMoments() {
+            let feed = document.getElementById('momentFeed');
+            feed.innerHTML = moments.map(m => {
+                let contact = m.contactId === 'self' ? { name: '我', avatar: 'fas fa-user-circle' } : contacts.find(c => c.id === m.contactId) || { name: '神秘人', avatar: 'fas fa-star' };
+                let likedClass = m.likedBySelf ? 'fas fa-heart' : 'far fa-heart';
+                let commentsHtml = (m.comments || []).map(c => {
+                    let commenter = c.from === 'self' ? '我' : (contacts.find(ct => ct.id === c.from)?.name || '某人');
+                    return `<div class="comment-item"><span class="comment-name">${commenter}:</span> ${c.text}</div>`;
+                }).join('');
+                return `<div class="post-card" data-moment-id="${m.id}">
+                    <div class="post-header"><div class="avatar">${renderAvatar(contact.avatar)}</div><b>${contact.name}</b> <span style="color:#a27b90;">${m.time}</span></div>
+                    <div class="post-content" id="moment-content-${m.id}">${m.content}</div>
+                    <div class="post-actions">
+                        <span><i class="${likedClass}" data-like="${m.id}"></i> <span class="likes-count">${m.likes}</span></span>
+                        <span><i class="far fa-comment" data-comment="${m.id}"></i> 评论</span>
+                    </div>
+                    <div class="post-toolbar">
+                        <i class="fas fa-edit" data-edit="${m.id}"></i>
+                        <i class="fas fa-trash-alt" data-delete="${m.id}"></i>
+                    </div>
+                    <div class="comments-section" id="comments-${m.id}">
+                        ${commentsHtml}
+                    </div>
+                </div>`;
+            }).join('');
+
+            // 绑定点赞
+            document.querySelectorAll('[data-like]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    let id = Number(e.target.dataset.like);
+                    let moment = moments.find(m => m.id === id);
+                    if (moment) {
+                        moment.likedBySelf = !moment.likedBySelf;
+                        moment.likes += moment.likedBySelf ? 1 : -1;
+                        renderMoments();
+                    }
+                });
+            });
+            // 评论
+            document.querySelectorAll('[data-comment]').forEach(b
