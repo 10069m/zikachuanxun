@@ -831,24 +831,25 @@ document.getElementById('commentText').value.trim();
             phraseText.value = phrases.join('\n');
             phraseBank.innerHTML = phrases.map(p => `<div class="phrase-item">📄 ${p} <i class="far fa-trash-alt" data-ph="${p}"></i></div>`).join('');
         }
-document.getElementById('importJsonBtn').addEventListener('click', () => {
-    document.getElementById('jsonFile').click();
-});
 document.getElementById('jsonFile').addEventListener('change', (e) => {
     let file = e.target.files[0];
     if (!file) return;
     let reader = new FileReader();
     reader.onload = (ev) => {
         try { 
-            let arr = JSON.parse(ev.target.result);
-            if (Array.isArray(arr)) {
-                phrases = arr;
-                refreshPhraseBank(); // 刷新字条库显示
+            let obj = JSON.parse(ev.target.result);
+            // 如果解析结果是数组，直接使用；如果是对象且有 customReplies 字段，则取其值
+            if (Array.isArray(obj)) {
+                phrases = obj;
+            } else if (obj.customReplies && Array.isArray(obj.customReplies)) {
+                phrases = obj.customReplies;
             } else {
-                alert('JSON 必须是一个字符串数组');
+                alert('JSON 应为字符串数组或包含 customReplies 数组的对象');
+                return;
             }
+            refreshPhraseBank();
         } catch { 
-            alert('文件格式错误，请导入有效的 JSON 数组'); 
+            alert('文件格式错误，请导入有效的 JSON'); 
         }
     };
     reader.readAsText(file);
