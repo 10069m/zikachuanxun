@@ -484,7 +484,36 @@
         // 写信独立聊天
         let writeMessages = [{ from: 'other', text: '✨ 我在呢，想说什么？', time: '刚刚' }];
         let currentContact = 0;  // 当前选中的联系人id
-
+// ---------- 加载存档 (localStorage) ----------
+function loadFromStorage() {
+    try {
+        const savedPhrases = localStorage.getItem('dream_phrases');
+        if (savedPhrases) phrases = JSON.parse(savedPhrases);
+        
+        const savedContacts = localStorage.getItem('dream_contacts');
+        if (savedContacts) contacts = JSON.parse(savedContacts);
+        
+        const savedChatHistory = localStorage.getItem('dream_chatHistory');
+        if (savedChatHistory) chatHistory = JSON.parse(savedChatHistory);
+        
+        const savedMoments = localStorage.getItem('dream_moments');
+        if (savedMoments) moments = JSON.parse(savedMoments);
+        
+        const savedWriteMessages = localStorage.getItem('dream_writeMessages');
+        if (savedWriteMessages) writeMessages = JSON.parse(savedWriteMessages);
+    } catch (e) {
+        console.warn('读取存档失败', e);
+    }
+}
+loadFromStorage();
+        // ---------- 保存存档 ----------
+function saveAllData() {
+    localStorage.setItem('dream_phrases', JSON.stringify(phrases));
+    localStorage.setItem('dream_contacts', JSON.stringify(contacts));
+    localStorage.setItem('dream_chatHistory', JSON.stringify(chatHistory));
+    localStorage.setItem('dream_moments', JSON.stringify(moments));
+    localStorage.setItem('dream_writeMessages', JSON.stringify(writeMessages));
+}
         // 工具函数: 新ID
         function newId(arr) { return arr.length ? Math.max(...arr.map(x=>x.id)) + 1 : 0; }
 
