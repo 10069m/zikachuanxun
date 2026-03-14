@@ -883,15 +883,19 @@ document.getElementById('jsonFile').addEventListener('change', (e) => {
     reader.onload = (ev) => {
         try {
             let obj = JSON.parse(ev.target.result);
+            let newItems = [];
             if (Array.isArray(obj)) {
-                phrases = obj;
+                newItems = obj;
             } else if (obj.customReplies && Array.isArray(obj.customReplies)) {
-                phrases = obj.customReplies;
+                newItems = obj.customReplies;
             } else {
                 alert('JSON 应为字符串数组或包含 customReplies 数组的对象');
                 return;
             }
-            refreshPhraseBank();
+            // 追加模式：将新项添加到现有 phrases 末尾（不去重，如需去重可自行添加）
+            phrases = phrases.concat(newItems);
+            refreshPhraseBank();                // 更新界面显示
+            if (typeof saveAllData === 'function') saveAllData(); // 如果有存档功能，保存到本地
         } catch {
             alert('文件格式错误，请导入有效的 JSON');
         }
