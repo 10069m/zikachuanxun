@@ -646,6 +646,7 @@ function saveAllData() {
             chatHistory[currentContact].push({ from: 'other', text: reply, time: '1分钟后' });
             inp.value = '';
             renderWcChat();
+            saveAllData();
         });
 
         // 表情包
