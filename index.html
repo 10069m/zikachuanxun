@@ -831,25 +831,28 @@ document.getElementById('commentText').value.trim();
             phraseText.value = phrases.join('\n');
             phraseBank.innerHTML = phrases.map(p => `<div class="phrase-item">📄 ${p} <i class="far fa-trash-alt" data-ph="${p}"></i></div>`).join('');
         }
-        document.getElementById('savePhrases').addEventListener('click', () => {
-            phrases = phraseText.value.split('\n').map(s=>s.trim()).filter(s=>s);
-            refreshPhraseBank();
-        });
-        document.getElementById('importJsonBtn').addEventListener('click', () => {
-            document.getElementById('jsonFile').click();
-        });
-        document.getElementById('jsonFile').addEventListener('change', (e) => {
-            let file = e.target.files[0];
-            let reader = new FileReader();
-            reader.onload = (ev) => {
-                try { 
-                    let arr = JSON.parse(ev.target.result);
-                    if (Array.isArray(arr)) phrases = arr;
-                    refreshPhraseBank();
-                } catch { alert('JSON应为字符串数组'); }
-            };
-            reader.readAsText(file);
-        });
+document.getElementById('importJsonBtn').addEventListener('click', () => {
+    document.getElementById('jsonFile').click();
+});
+document.getElementById('jsonFile').addEventListener('change', (e) => {
+    let file = e.target.files[0];
+    if (!file) return;
+    let reader = new FileReader();
+    reader.onload = (ev) => {
+        try { 
+            let arr = JSON.parse(ev.target.result);
+            if (Array.isArray(arr)) {
+                phrases = arr;
+                refreshPhraseBank(); // 刷新字条库显示
+            } else {
+                alert('JSON 必须是一个字符串数组');
+            }
+        } catch { 
+            alert('文件格式错误，请导入有效的 JSON 数组'); 
+        }
+    };
+    reader.readAsText(file);
+});
         phraseBank.addEventListener('click', (e) => {
             if (e.target.classList.contains('fa-trash-alt')) {
                 let del = e.target.parentElement.dataset.ph;
