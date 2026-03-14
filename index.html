@@ -505,8 +505,8 @@ function loadFromStorage() {
         console.warn('读取存档失败', e);
     }
 }
-loadFromStorage();
-        // ---------- 保存存档 ----------
+loadFromStorage(); // 立即加载
+        // ---------- 保存所有数据到 localStorage ----------
 function saveAllData() {
     localStorage.setItem('dream_phrases', JSON.stringify(phrases));
     localStorage.setItem('dream_contacts', JSON.stringify(contacts));
