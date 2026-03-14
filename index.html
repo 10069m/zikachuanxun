@@ -831,7 +831,10 @@ document.getElementById('commentText').value.trim();
             phraseText.value = phrases.join('\n');
             phraseBank.innerHTML = phrases.map(p => `<div class="phrase-item">📄 ${p} <i class="far fa-trash-alt" data-ph="${p}"></i></div>`).join('');
         }
-document.getElementById('jsonFile').addEventListener('change', (e) => {
+document.getElementById('importJsonBtn').addEventListener('click', () => {
+    document.getElementById('jsonFile').click();
+});
+        document.getElementById('jsonFile').addEventListener('change', (e) => {
     let file = e.target.files[0];
     if (!file) return;
     let reader = new FileReader();
