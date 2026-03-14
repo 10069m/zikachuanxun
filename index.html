@@ -570,11 +570,40 @@ function saveAllData() {
             inp.value = '';
             renderWrite();
         });
-        document.getElementById('aiReplyBtn').addEventListener('click', () => {
-            let r = phrases[Math.floor(Math.random() * phrases.length)] + ' (AI模拟)';
-            writeMessages.push({ from: 'other', text: r, time: '片刻后' });
-            renderWrite();
+      document.getElementById('aiReplyBtn').addEventListener('click', async () => {
+    // 显示等待提示
+    const tempMsg = { from: 'other', text: '✨ 正在思考中...', time: '现在' };
+    writeMessages.push(tempMsg);
+    renderWrite();
+
+    try {
+        const API_URL = 'https://open.bigmodel.cn/api/paas/v4/chat/completions'; // 示例URL，请替换为实际
+        const API_KEY = '4aed363f77f1402881833a66f15f9343.UKipsQKKOXnKSaLG'; // 替换为您的密钥
+
+        // 获取对话上下文（可选：将最近几条消息作为上下文发送）
+        const recentMessages = writeMessages.slice(-5).map(m => ({
+            role: m.from === 'me' ? 'user' : 'assistant',
+            content: m.text
+        }));
+
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${API_KEY}`
+            },
+            body: JSON.stringify({
+                model: 'glm-4-flash', // 模型名称，根据API调整
+                messages: recentMessages,
+                temperature: 0.8,
+                max_tokens: 100
+            })
         });
+
+        if (!response.ok) throw new Error(`API错误: ${response.status}`);
+
+        const data = await response.json();
+        const reply = data.choices[0].message.content.trim();
         document.getElementById('activeWriteBtn').addEventListener('click', () => {
             let r = phrases[Math.floor(Math.random() * phrases.length)] + ' (主动)';
             writeMessages.push({ from: 'other', text: r, time: '主动' });
