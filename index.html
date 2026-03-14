@@ -443,27 +443,25 @@
 
     <!-- 设置模块 -->
     <div id="settingsScreen" class="screen hidden">
-        <div class="module-header"><button class="back-btn" data-back><i class="fas fa-arrow-left"></i></button><div class="module-title">字卡调频</div></div>
-        <div style="background:#fef2f8; border-radius:30px; padding:18px; margin-bottom:18px;">
-            <h4>📁 字条库 (一行一句)</h4>
-            <textarea id="phraseTextarea" rows="4" style="width:100%; border-radius:25px; padding:12px;"></textarea>
-            <div style="display:flex; gap:8px; flex-wrap:wrap; margin:10px 0;">
-                <button class="btn" id="savePhrases">保存修改</button>
-                <button class="btn" id="importJsonBtn">导入JSON</button>
-                <input type="file" id="jsonFile" accept="application/json" style="display:none;">
-            </div>
-            <div class="phrase-bank" id="phraseBank"></div>
+    <div class="module-header"><button class="back-btn" data-back><i class="fas fa-arrow-left"></i></button><div class="module-title">字卡调频</div></div>
+    <div style="background:#fef2f8; border-radius:30px; padding:18px; margin-bottom:18px;">
+        <h4>📁 字条库 (一行一句)</h4>
+        <textarea id="phraseTextarea" rows="4" style="width:100%; border-radius:25px; padding:12px;"></textarea>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin:10px 0;">
+            <button class="btn" id="savePhrases">保存修改</button>
+            <button class="btn" id="importJsonBtn">导入JSON</button>
+            <input type="file" id="jsonFile" accept="application/json" style="display:none;">
         </div>
-        <div style="background:#fef2f8; border-radius:30px; padding:18px;">
-            <h4>🎨 视觉</h4>
-            <div>主背景色: <input type="color" id="homeBgColor" value="#fdeff2"></div>
-            <div>自己气泡: <input type="color" id="bubbleMeColor" value="#e7b8d4"></div>
-            <div>对方字体大小: <input type="number" id="otherFontSize" value="14" min="10" max="24"></div>
-            <button class="btn" id="applySettings" style="margin-top:15px;">应用</button>
-        </div>
+        <div class="phrase-bank" id="phraseBank"></div>
     </div>
-</div>
-
+    <div style="background:#fef2f8; border-radius:30px; padding:18px;">
+        <h4>🎨 视觉</h4>
+        <div>主背景色: <input type="color" id="homeBgColor" value="#fdeff2"></div>
+        <div>自己气泡: <input type="color" id="bubbleMeColor" value="#e7b8d4"></div>
+        <div>对方字体大小: <input type="number" id="otherFontSize" value="14" min="10" max="24"></div>
+        <button class="btn" id="applySettings" style="margin-top:15px;">应用</button>
+    </div>
+    </div>
 <script>
     (function(){
         // 全局数据 -------------------------------------------------
