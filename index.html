@@ -21,7 +21,6 @@
             align-items: center;
             padding: 10px;
         }
-        /* 手机框 */
         .phone {
             max-width: 400px;
             width: 100%;
@@ -34,7 +33,6 @@
             flex-direction: column;
             position: relative;
         }
-        /* 主界面/模块容器 */
         .screen {
             flex: 1;
             overflow-y: auto;
@@ -49,7 +47,6 @@
         .hidden {
             display: none !important;
         }
-        /* 顶部时间日期 */
         .time-header {
             text-align: center;
             margin-bottom: 20px;
@@ -66,7 +63,6 @@
             border-bottom: 1px dashed #e3b8d0;
             padding-bottom: 20px;
         }
-        /* 主菜单图标网格 */
         .grid-2x2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -94,7 +90,6 @@
             color: #72455f;
             font-weight: 450;
         }
-        /* 模块头部 */
         .module-header {
             display: flex;
             align-items: center;
@@ -119,7 +114,6 @@
             font-weight: 300;
             color: #6d3b5a;
         }
-        /* 通用卡片样式 */
         .chat-area {
             background: #fff9fd;
             border-radius: 35px;
@@ -194,7 +188,6 @@
             padding: 6px 12px;
             font-size: 0.8rem;
         }
-        /* 通讯录 tab */
         .tab-bar {
             display: flex;
             gap: 20px;
@@ -213,7 +206,6 @@
             font-weight: 600;
             border-bottom: 3px solid #d86eac;
         }
-        /* 联系人列表 */
         .contact-list {
             background: #fdf0f7;
             border-radius: 35px;
@@ -247,7 +239,6 @@
             height: 100%;
             object-fit: cover;
         }
-        /* 朋友圈卡片 */
         .post-card {
             background: white;
             border-radius: 28px;
@@ -297,7 +288,6 @@
             font-weight: 600;
             color: #ac557f;
         }
-        /* 模态框 */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -328,7 +318,6 @@
             gap: 10px;
             margin-top: 15px;
         }
-        /* 字条库 */
         .phrase-bank {
             background: white;
             border-radius: 20px;
@@ -443,523 +432,524 @@
 
     <!-- 设置模块 -->
     <div id="settingsScreen" class="screen hidden">
-    <div class="module-header"><button class="back-btn" data-back><i class="fas fa-arrow-left"></i></button><div class="module-title">字卡调频</div></div>
-    <div style="background:#fef2f8; border-radius:30px; padding:18px; margin-bottom:18px;">
-        <h4>📁 字条库 (一行一句)</h4>
-        <textarea id="phraseTextarea" rows="4" style="width:100%; border-radius:25px; padding:12px;"></textarea>
-        <div style="display:flex; gap:8px; flex-wrap:wrap; margin:10px 0;">
-            <button class="btn" id="savePhrases">保存修改</button>
-            <button class="btn" id="importJsonBtn">导入JSON</button>
-            <input type="file" id="jsonFile" accept="application/json" style="display:none;">
+        <div class="module-header"><button class="back-btn" data-back><i class="fas fa-arrow-left"></i></button><div class="module-title">字卡调频</div></div>
+        <div style="background:#fef2f8; border-radius:30px; padding:18px; margin-bottom:18px;">
+            <h4>📁 字条库 (一行一句)</h4>
+            <textarea id="phraseTextarea" rows="4" style="width:100%; border-radius:25px; padding:12px;"></textarea>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin:10px 0;">
+                <button class="btn" id="savePhrases">保存修改</button>
+                <button class="btn" id="importJsonBtn">导入JSON</button>
+                <input type="file" id="jsonFile" accept="application/json" style="display:none;">
+            </div>
+            <div class="phrase-bank" id="phraseBank"></div>
         </div>
-        <div class="phrase-bank" id="phraseBank"></div>
+        <div style="background:#fef2f8; border-radius:30px; padding:18px;">
+            <h4>🎨 视觉</h4>
+            <div>主背景色: <input type="color" id="homeBgColor" value="#fdeff2"></div>
+            <div>自己气泡: <input type="color" id="bubbleMeColor" value="#e7b8d4"></div>
+            <div>对方字体大小: <input type="number" id="otherFontSize" value="14" min="10" max="24"></div>
+            <button class="btn" id="applySettings" style="margin-top:15px;">应用</button>
+        </div>
     </div>
-    <div style="background:#fef2f8; border-radius:30px; padding:18px;">
-        <h4>🎨 视觉</h4>
-        <div>主背景色: <input type="color" id="homeBgColor" value="#fdeff2"></div>
-        <div>自己气泡: <input type="color" id="bubbleMeColor" value="#e7b8d4"></div>
-        <div>对方字体大小: <input type="number" id="otherFontSize" value="14" min="10" max="24"></div>
-        <button class="btn" id="applySettings" style="margin-top:15px;">应用</button>
-    </div>
-    </div>
+</div>
+
 <script>
-    (function(){
-        // 全局数据 -------------------------------------------------
-        let phrases = ['在吗？', '我想你了✨', '今天好美', '梦里有你', '要开心哦', '忙什么呢', '抱抱', '晚安', '天气真好', '记得想我'];
-        // 联系人: id, name, avatar (icon类 或 dataURL), status, personality, mood, weather
-        let contacts = [
-            { id: 0, name: '白泽君', avatar: 'fas fa-user-astronaut', status: '雨天·思念', personality: '温柔', mood: '思念', weather: '雨' },
-            { id: 1, name: '鹿灵', avatar: 'fas fa-cat', status: '晴天·调皮', personality: '活泼', mood: '调皮', weather: '晴' }
-        ];
-        // 聊天记录 { contactId: [{ from: 'me'/'other', text, time }] }
-        let chatHistory = {
-            0: [{ from: 'other', text: '✨ 我在呢', time: '14:20' }],
-            1: [{ from: 'other', text: '喵~', time: '13:10' }]
-        };
-        // 朋友圈: id, contactId (或 'self'), content, time, likes, likedBySelf, comments: [{ from: contactId / 'self', text }]
-        let moments = [
-            { id: 0, contactId: 0, content: '下雨了，空气里有你的味道。', time: '1小时前', likes: 3, likedBySelf: false, comments: [{ from: 1, text: '我也闻到了' }] },
-            { id: 1, contactId: 1, content: '抓到一只蝴蝶~送给你', time: '30分钟前', likes: 5, likedBySelf: false, comments: [] }
-        ];
-        // 写信独立聊天
-        let writeMessages = [{ from: 'other', text: '✨ 我在呢，想说什么？', time: '刚刚' }];
-        let currentContact = 0;  // 当前选中的联系人id
-// ---------- 加载存档 (localStorage) ----------
-function loadFromStorage() {
-    try {
-        const savedPhrases = localStorage.getItem('dream_phrases');
-        if (savedPhrases) phrases = JSON.parse(savedPhrases);
-        
-        const savedContacts = localStorage.getItem('dream_contacts');
-        if (savedContacts) contacts = JSON.parse(savedContacts);
-        
-        const savedChatHistory = localStorage.getItem('dream_chatHistory');
-        if (savedChatHistory) chatHistory = JSON.parse(savedChatHistory);
-        
-        const savedMoments = localStorage.getItem('dream_moments');
-        if (savedMoments) moments = JSON.parse(savedMoments);
-        
-        const savedWriteMessages = localStorage.getItem('dream_writeMessages');
-        if (savedWriteMessages) writeMessages = JSON.parse(savedWriteMessages);
-    } catch (e) {
-        console.warn('读取存档失败', e);
+(function(){
+    // ---------- 全局数据 ----------
+    let phrases = ['在吗？', '我想你了✨', '今天好美', '梦里有你', '要开心哦', '忙什么呢', '抱抱', '晚安', '天气真好', '记得想我'];
+    let contacts = [
+        { id: 0, name: '白泽君', avatar: 'fas fa-user-astronaut', status: '雨天·思念', personality: '温柔', mood: '思念', weather: '雨' },
+        { id: 1, name: '鹿灵', avatar: 'fas fa-cat', status: '晴天·调皮', personality: '活泼', mood: '调皮', weather: '晴' }
+    ];
+    let chatHistory = {
+        0: [{ from: 'other', text: '✨ 我在呢', time: '14:20' }],
+        1: [{ from: 'other', text: '喵~', time: '13:10' }]
+    };
+    let moments = [
+        { id: 0, contactId: 0, content: '下雨了，空气里有你的味道。', time: '1小时前', likes: 3, likedBySelf: false, comments: [{ from: 1, text: '我也闻到了' }] },
+        { id: 1, contactId: 1, content: '抓到一只蝴蝶~送给你', time: '30分钟前', likes: 5, likedBySelf: false, comments: [] }
+    ];
+    let writeMessages = [{ from: 'other', text: '✨ 我在呢，想说什么？', time: '刚刚' }];
+    let currentContact = 0;
+
+    // ---------- 加载存档 ----------
+    function loadFromStorage() {
+        try {
+            const savedPhrases = localStorage.getItem('dream_phrases');
+            if (savedPhrases) phrases = JSON.parse(savedPhrases);
+            const savedContacts = localStorage.getItem('dream_contacts');
+            if (savedContacts) contacts = JSON.parse(savedContacts);
+            const savedChatHistory = localStorage.getItem('dream_chatHistory');
+            if (savedChatHistory) chatHistory = JSON.parse(savedChatHistory);
+            const savedMoments = localStorage.getItem('dream_moments');
+            if (savedMoments) moments = JSON.parse(savedMoments);
+            const savedWriteMessages = localStorage.getItem('dream_writeMessages');
+            if (savedWriteMessages) writeMessages = JSON.parse(savedWriteMessages);
+        } catch (e) {
+            console.warn('读取存档失败', e);
+        }
     }
-}
-loadFromStorage(); // 立即加载
-        // ---------- 保存所有数据到 localStorage ----------
-function saveAllData() {
-    localStorage.setItem('dream_phrases', JSON.stringify(phrases));
-    localStorage.setItem('dream_contacts', JSON.stringify(contacts));
-    localStorage.setItem('dream_chatHistory', JSON.stringify(chatHistory));
-    localStorage.setItem('dream_moments', JSON.stringify(moments));
-    localStorage.setItem('dream_writeMessages', JSON.stringify(writeMessages));
-}
-        // 工具函数: 新ID
-        function newId(arr) { return arr.length ? Math.max(...arr.map(x=>x.id)) + 1 : 0; }
+    loadFromStorage();
 
-        // 时间更新 -------------------------------------------------
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('liveHour').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            document.getElementById('liveDate').innerText = now.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' });
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
+    // ---------- 保存所有数据 ----------
+    function saveAllData() {
+        localStorage.setItem('dream_phrases', JSON.stringify(phrases));
+        localStorage.setItem('dream_contacts', JSON.stringify(contacts));
+        localStorage.setItem('dream_chatHistory', JSON.stringify(chatHistory));
+        localStorage.setItem('dream_moments', JSON.stringify(moments));
+        localStorage.setItem('dream_writeMessages', JSON.stringify(writeMessages));
+    }
 
-        // 模块切换 -------------------------------------------------
-        const home = document.getElementById('homeScreen');
-        const writeScr = document.getElementById('writeScreen');
-        const wechatScr = document.getElementById('wechatScreen');
-        const tarotScr = document.getElementById('tarotScreen');
-        const settingsScr = document.getElementById('settingsScreen');
-        function showScreen(name) {
-            [home, writeScr, wechatScr, tarotScr, settingsScr].forEach(s => s.classList.add('hidden'));
-            if (name === 'home') home.classList.remove('hidden');
-            else if (name === 'write') writeScr.classList.remove('hidden');
-            else if (name === 'wechat') wechatScr.classList.remove('hidden');
-            else if (name === 'tarot') tarotScr.classList.remove('hidden');
-            else if (name === 'settings') settingsScr.classList.remove('hidden');
-        }
-        // 监听菜单图标
-        document.querySelectorAll('.menu-icon[data-module]').forEach(el => {
-            el.addEventListener('click', () => showScreen(el.dataset.module));
-        });
-        // 返回按钮
-        document.querySelectorAll('[data-back]').forEach(btn => {
-            btn.addEventListener('click', () => showScreen('home'));
-        });
+    // 工具函数: 新ID
+    function newId(arr) { return arr.length ? Math.max(...arr.map(x=>x.id)) + 1 : 0; }
 
-        // 渲染头像辅助
-        function renderAvatar(avatar) {
-            if (avatar && avatar.startsWith('data:')) return `<img src="${avatar}">`;
-            else return `<i class="${avatar || 'fas fa-user'}"></i>`;
-        }
+    // ---------- 时间实时更新 ----------
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('liveHour').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        document.getElementById('liveDate').innerText = now.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' });
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
 
-        // 写信模块 -------------------------------------------------
-        const writeChatBox = document.getElementById('writeChatBox');
-        function renderWrite() {
-            writeChatBox.innerHTML = writeMessages.map(m => 
-                `<div class="message ${m.from}">${m.text}<div class="msg-time">${m.time || '刚刚'}</div></div>`
-            ).join('');
-            writeChatBox.scrollTop = writeChatBox.scrollHeight;
-        }
-        document.getElementById('sendWriteBtn').addEventListener('click', () => {
-            let inp = document.getElementById('writeInput');
-            if (!inp.value.trim()) return;
-            writeMessages.push({ from: 'me', text: inp.value, time: '此刻' });
-            inp.value = '';
-            renderWrite();
-        });
-      document.getElementById('aiReplyBtn').addEventListener('click', async () => {
-    // 显示等待提示
-    const tempMsg = { from: 'other', text: '✨ 正在思考中...', time: '现在' };
-    writeMessages.push(tempMsg);
-    renderWrite();
+    // ---------- 模块切换 ----------
+    const home = document.getElementById('homeScreen');
+    const writeScr = document.getElementById('writeScreen');
+    const wechatScr = document.getElementById('wechatScreen');
+    const tarotScr = document.getElementById('tarotScreen');
+    const settingsScr = document.getElementById('settingsScreen');
+    function showScreen(name) {
+        [home, writeScr, wechatScr, tarotScr, settingsScr].forEach(s => s.classList.add('hidden'));
+        if (name === 'home') home.classList.remove('hidden');
+        else if (name === 'write') writeScr.classList.remove('hidden');
+        else if (name === 'wechat') wechatScr.classList.remove('hidden');
+        else if (name === 'tarot') tarotScr.classList.remove('hidden');
+        else if (name === 'settings') settingsScr.classList.remove('hidden');
+    }
+    document.querySelectorAll('.menu-icon[data-module]').forEach(el => {
+        el.addEventListener('click', () => showScreen(el.dataset.module));
+    });
+    document.querySelectorAll('[data-back]').forEach(btn => {
+        btn.addEventListener('click', () => showScreen('home'));
+    });
 
-    try {
-        const API_URL = 'https://open.bigmodel.cn/api/paas/v4/chat/completions'; // 示例URL，请替换为实际
-        const API_KEY = '4aed363f77f1402881833a66f15f9343.UKipsQKKOXnKSaLG'; // 替换为您的密钥
+    // 渲染头像辅助
+    function renderAvatar(avatar) {
+        if (avatar && avatar.startsWith('data:')) return `<img src="${avatar}">`;
+        else return `<i class="${avatar || 'fas fa-user'}"></i>`;
+    }
 
-        // 获取对话上下文（可选：将最近几条消息作为上下文发送）
-        const recentMessages = writeMessages.slice(-5).map(m => ({
-            role: m.from === 'me' ? 'user' : 'assistant',
-            content: m.text
-        }));
+    // ---------- 写信模块 ----------
+    const writeChatBox = document.getElementById('writeChatBox');
+    function renderWrite() {
+        writeChatBox.innerHTML = writeMessages.map(m => 
+            `<div class="message ${m.from}">${m.text}<div class="msg-time">${m.time || '刚刚'}</div></div>`
+        ).join('');
+        writeChatBox.scrollTop = writeChatBox.scrollHeight;
+    }
 
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${API_KEY}`
-            },
-            body: JSON.stringify({
-                model: 'glm-4-flash', // 模型名称，根据API调整
-                messages: recentMessages,
-                temperature: 0.8,
-                max_tokens: 100
-            })
-        });
+    document.getElementById('sendWriteBtn').addEventListener('click', () => {
+        let inp = document.getElementById('writeInput');
+        if (!inp.value.trim()) return;
+        writeMessages.push({ from: 'me', text: inp.value, time: '此刻' });
+        inp.value = '';
+        renderWrite();
+        saveAllData();
+    });
 
-        if (!response.ok) throw new Error(`API错误: ${response.status}`);
-
-        const data = await response.json();
-        const reply = data.choices[0].message.content.trim();
-        document.getElementById('activeWriteBtn').addEventListener('click', () => {
-            let r = phrases[Math.floor(Math.random() * phrases.length)] + ' (主动)';
-            writeMessages.push({ from: 'other', text: r, time: '主动' });
-            renderWrite();
-        });
+    document.getElementById('aiReplyBtn').addEventListener('click', async () => {
+        const tempIndex = writeMessages.length;
+        const tempMsg = { from: 'other', text: '✨ 正在思考中...', time: '现在' };
+        writeMessages.push(tempMsg);
         renderWrite();
 
-        // 通讯模块 -------------------------------------------------
-        const chatPanel = document.getElementById('chatPanel');
-        const contactsPanel = document.getElementById('contactsPanel');
-        const momentsPanel = document.getElementById('momentsPanel');
-        const tabs = document.querySelectorAll('[data-wctab]');
-        tabs.forEach(t => {
-            t.addEventListener('click', (e) => {
-                tabs.forEach(tab => tab.classList.remove('active'));
-                t.classList.add('active');
-                chatPanel.classList.add('hidden');
-                contactsPanel.classList.add('hidden');
-                momentsPanel.classList.add('hidden');
-                if (t.dataset.wctab === 'chat') {
-                    chatPanel.classList.remove('hidden');
-                    renderChatContacts();
-                    renderWcChat();
-                } else if (t.dataset.wctab === 'contacts') {
-                    contactsPanel.classList.remove('hidden');
-                    renderFullContacts();
-                } else if (t.dataset.wctab === 'moments') {
-                    momentsPanel.classList.remove('hidden');
-                    renderMoments();
-                }
+        try {
+            const API_URL = 'https://open.bigmodel.cn/api/paas/v4/chat/completions';
+            const API_KEY = '4aed363f77f1402881833a66f15f9343.UKipsQKKOXnKSaLG'; // 请替换为您的有效密钥
+
+            const contextMessages = writeMessages.filter((_, i) => i !== tempIndex).slice(-5);
+            const recentMessages = contextMessages.map(m => ({
+                role: m.from === 'me' ? 'user' : 'assistant',
+                content: m.text
+            }));
+
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${API_KEY}`
+                },
+                body: JSON.stringify({
+                    model: 'glm-4-flash',
+                    messages: recentMessages,
+                    temperature: 0.8,
+                    max_tokens: 100
+                })
+            });
+
+            if (!response.ok) throw new Error(`API错误: ${response.status}`);
+            const data = await response.json();
+            const reply = data.choices[0].message.content.trim();
+
+            writeMessages.pop(); // 移除等待消息
+            writeMessages.push({ from: 'other', text: reply, time: '片刻后' });
+            renderWrite();
+            saveAllData();
+        } catch (error) {
+            console.error('AI回信失败', error);
+            writeMessages.pop();
+            const fallback = phrases[Math.floor(Math.random() * phrases.length)] + ' (备用)';
+            writeMessages.push({ from: 'other', text: fallback, time: '片刻后' });
+            renderWrite();
+            saveAllData();
+        }
+    });
+
+    document.getElementById('activeWriteBtn').addEventListener('click', () => {
+        let r = phrases[Math.floor(Math.random() * phrases.length)] + ' (主动)';
+        writeMessages.push({ from: 'other', text: r, time: '主动' });
+        renderWrite();
+        saveAllData();
+    });
+
+    // ---------- 通讯模块 ----------
+    const chatPanel = document.getElementById('chatPanel');
+    const contactsPanel = document.getElementById('contactsPanel');
+    const momentsPanel = document.getElementById('momentsPanel');
+    const tabs = document.querySelectorAll('[data-wctab]');
+    tabs.forEach(t => {
+        t.addEventListener('click', (e) => {
+            tabs.forEach(tab => tab.classList.remove('active'));
+            t.classList.add('active');
+            chatPanel.classList.add('hidden');
+            contactsPanel.classList.add('hidden');
+            momentsPanel.classList.add('hidden');
+            if (t.dataset.wctab === 'chat') {
+                chatPanel.classList.remove('hidden');
+                renderChatContacts();
+                renderWcChat();
+            } else if (t.dataset.wctab === 'contacts') {
+                contactsPanel.classList.remove('hidden');
+                renderFullContacts();
+            } else if (t.dataset.wctab === 'moments') {
+                momentsPanel.classList.remove('hidden');
+                renderMoments();
+            }
+        });
+    });
+
+    const chatContactList = document.getElementById('chatContactList');
+    function renderChatContacts() {
+        chatContactList.innerHTML = contacts.map(c => 
+            `<div class="contact-item" data-cid="${c.id}">
+                <div class="avatar">${renderAvatar(c.avatar)}</div>
+                <div><h4>${c.name}</h4><p>${c.status || ''}</p></div>
+            </div>`
+        ).join('');
+        chatContactList.querySelectorAll('.contact-item').forEach(el => {
+            el.addEventListener('click', () => {
+                currentContact = Number(el.dataset.cid);
+                renderWcChat();
             });
         });
+    }
 
-        // 聊天联系人列表
-        const chatContactList = document.getElementById('chatContactList');
-        function renderChatContacts() {
-            chatContactList.innerHTML = contacts.map(c => 
-                `<div class="contact-item" data-cid="${c.id}">
-                    <div class="avatar">${renderAvatar(c.avatar)}</div>
-                    <div><h4>${c.name}</h4><p>${c.status || ''}</p></div>
-                </div>`
-            ).join('');
-            // 点击切换联系人
-            chatContactList.querySelectorAll('.contact-item').forEach(el => {
-                el.addEventListener('click', () => {
-                    currentContact = Number(el.dataset.cid);
-                    renderWcChat();
-                });
-            });
-        }
+    function renderWcChat() {
+        let box = document.getElementById('wcChatBox');
+        let msgs = chatHistory[currentContact] || [];
+        box.innerHTML = msgs.map(m => 
+            `<div class="message ${m.from}">${m.text}<div class="msg-time">${m.time}</div></div>`
+        ).join('');
+    }
 
-        function renderWcChat() {
-            let box = document.getElementById('wcChatBox');
-            let msgs = chatHistory[currentContact] || [];
-            box.innerHTML = msgs.map(m => 
-                `<div class="message ${m.from}">${m.text}<div class="msg-time">${m.time}</div></div>`
-            ).join('');
-        }
+    document.getElementById('sendWcMsg').addEventListener('click', () => {
+        let inp = document.getElementById('wcMsgInput');
+        let txt = inp.value.trim();
+        if (!txt) return;
+        if (!chatHistory[currentContact]) chatHistory[currentContact] = [];
+        chatHistory[currentContact].push({ from: 'me', text: txt, time: '刚刚' });
+        let reply = phrases[Math.floor(Math.random() * phrases.length)] + ' (字条)';
+        chatHistory[currentContact].push({ from: 'other', text: reply, time: '1分钟后' });
+        inp.value = '';
+        renderWcChat();
+        saveAllData();
+    });
 
-        // 发送消息 (聊天)
-        document.getElementById('sendWcMsg').addEventListener('click', () => {
-            let inp = document.getElementById('wcMsgInput');
-            let txt = inp.value.trim();
-            if (!txt) return;
+    document.getElementById('addEmojiBtn').addEventListener('click', () => {
+        document.getElementById('emojiUpload').click();
+    });
+    document.getElementById('emojiUpload').addEventListener('change', function(e) {
+        let file = e.target.files[0];
+        if (!file) return;
+        let reader = new FileReader();
+        reader.onload = (ev) => {
+            let imgHtml = `<img src="${ev.target.result}" style="max-width:120px; border-radius:15px;">`;
             if (!chatHistory[currentContact]) chatHistory[currentContact] = [];
-            chatHistory[currentContact].push({ from: 'me', text: txt, time: '刚刚' });
-            // 对方自动随机字条
-            let reply = phrases[Math.floor(Math.random() * phrases.length)] + ' (字条)';
-            chatHistory[currentContact].push({ from: 'other', text: reply, time: '1分钟后' });
-            inp.value = '';
+            chatHistory[currentContact].push({ from: 'other', text: imgHtml, time: '表情' });
             renderWcChat();
             saveAllData();
-        });
+        };
+        reader.readAsDataURL(file);
+    });
 
-        // 表情包
-        document.getElementById('addEmojiBtn').addEventListener('click', () => {
-            document.getElementById('emojiUpload').click();
-        });
-        document.getElementById('emojiUpload').addEventListener('change', function(e) {
-            let file = e.target.files[0];
-            if (!file) return;
-            let reader = new FileReader();
-            reader.onload = (ev) => {
-                let imgHtml = `<img src="${ev.target.result}" style="max-width:120px; border-radius:15px;">`;
-                if (!chatHistory[currentContact]) chatHistory[currentContact] = [];
-                chatHistory[currentContact].push({ from: 'other', text: imgHtml, time: '表情' });
-                renderWcChat();
-            };
-            reader.readAsDataURL(file);
-        });
-
-        // 对方一直发 (上限5)
-        document.getElementById('autoMultiMsg').addEventListener('click', () => {
-            let count = 0, max = 5;
-            let interval = setInterval(() => {
-                if (count >= max) { clearInterval(interval); return; }
-                let r = phrases[Math.floor(Math.random() * phrases.length)] + ' (连发)';
-                chatHistory[currentContact].push({ from: 'other', text: r, time: '连发' });
-                renderWcChat();
-                count++;
-            }, 600);
-        });
-
-        document.getElementById('contactActiveMsg').addEventListener('click', () => {
-            let r = phrases[Math.floor(Math.random() * phrases.length)] + ' (主动)';
-            chatHistory[currentContact].push({ from: 'other', text: r, time: '主动' });
+    document.getElementById('autoMultiMsg').addEventListener('click', () => {
+        let count = 0, max = 5;
+        let interval = setInterval(() => {
+            if (count >= max) { clearInterval(interval); return; }
+            let r = phrases[Math.floor(Math.random() * phrases.length)] + ' (连发)';
+            chatHistory[currentContact].push({ from: 'other', text: r, time: '连发' });
             renderWcChat();
-        });
+            saveAllData();
+            count++;
+        }, 600);
+    });
 
-        // 联系人完整列表
-        function renderFullContacts() {
-            let list = document.getElementById('contactsFullList');
-            list.innerHTML = contacts.map(c => 
-                `<div class="contact-item">
-                    <div class="avatar">${renderAvatar(c.avatar)}</div>
-                    <div><h4>${c.name}</h4><p>${c.status || '✨'}</p></div>
-                </div>`
-            ).join('');
-        }
+    document.getElementById('contactActiveMsg').addEventListener('click', () => {
+        let r = phrases[Math.floor(Math.random() * phrases.length)] + ' (主动)';
+        chatHistory[currentContact].push({ from: 'other', text: r, time: '主动' });
+        renderWcChat();
+        saveAllData();
+    });
 
-        // 添加联系人 (模态框)
-        document.getElementById('showAddContactForm').addEventListener('click', () => {
-            let modal = document.createElement('div');
-            modal.className = 'modal-overlay';
-            modal.innerHTML = `
-                <div class="modal-card">
-                    <h3>✨ 新联系人</h3>
-                    <input type="text" id="modalName" placeholder="名字" value="新朋友">
-                    <div class="flex"><span>头像:</span><input type="file" id="modalAvatar" accept="image/*"></div>
-                    <input type="text" id="modalStatus" placeholder="状态" value="晴·好奇">
-                    <div class="flex">
-                        <button class="btn btn-small" id="modalSave">保存</button>
-                        <button class="btn btn-small" id="modalCancel">取消</button>
-                    </div>
+    function renderFullContacts() {
+        let list = document.getElementById('contactsFullList');
+        list.innerHTML = contacts.map(c => 
+            `<div class="contact-item">
+                <div class="avatar">${renderAvatar(c.avatar)}</div>
+                <div><h4>${c.name}</h4><p>${c.status || '✨'}</p></div>
+            </div>`
+        ).join('');
+    }
+
+    document.getElementById('showAddContactForm').addEventListener('click', () => {
+        let modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+            <div class="modal-card">
+                <h3>✨ 新联系人</h3>
+                <input type="text" id="modalName" placeholder="名字" value="新朋友">
+                <div class="flex"><span>头像:</span><input type="file" id="modalAvatar" accept="image/*"></div>
+                <input type="text" id="modalStatus" placeholder="状态" value="晴·好奇">
+                <div class="flex">
+                    <button class="btn btn-small" id="modalSave">保存</button>
+                    <button class="btn btn-small" id="modalCancel">取消</button>
                 </div>
-            `;
-            document.body.appendChild(modal);
-            document.getElementById('modalCancel').addEventListener('click', () => modal.remove());
-            document.getElementById('modalSave').addEventListener('click', () => {
-                let name = document.getElementById('modalName').value.trim() || '无名';
-                let status = document.getElementById('modalStatus').value.trim() || '✨';
-                let file = document.getElementById('modalAvatar').files[0];
-                if (file) {
-                    let reader = new FileReader();
-                    reader.onload = (e) => {
-                        let newC = { id: contacts.length, name, avatar: e.target.result, status, personality: '', mood: '', weather: '' };
-                        contacts.push(newC);
-                        chatHistory[newC.id] = [];
-                        renderFullContacts();
-                        renderChatContacts();
-                        modal.remove();
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    let newC = { id: contacts.length, name, avatar: 'fas fa-user', status, personality: '', mood: '', weather: '' };
+            </div>
+        `;
+        document.body.appendChild(modal);
+        document.getElementById('modalCancel').addEventListener('click', () => modal.remove());
+        document.getElementById('modalSave').addEventListener('click', () => {
+            let name = document.getElementById('modalName').value.trim() || '无名';
+            let status = document.getElementById('modalStatus').value.trim() || '✨';
+            let file = document.getElementById('modalAvatar').files[0];
+            if (file) {
+                let reader = new FileReader();
+                reader.onload = (e) => {
+                    let newC = { id: contacts.length, name, avatar: e.target.result, status, personality: '', mood: '', weather: '' };
                     contacts.push(newC);
                     chatHistory[newC.id] = [];
                     renderFullContacts();
                     renderChatContacts();
+                    saveAllData();
                     modal.remove();
+                };
+                reader.readAsDataURL(file);
+            } else {
+                let newC = { id: contacts.length, name, avatar: 'fas fa-user', status, personality: '', mood: '', weather: '' };
+                contacts.push(newC);
+                chatHistory[newC.id] = [];
+                renderFullContacts();
+                renderChatContacts();
+                saveAllData();
+                modal.remove();
+            }
+        });
+    });
+
+    function renderMoments() {
+        let feed = document.getElementById('momentFeed');
+        feed.innerHTML = moments.map(m => {
+            let contact = m.contactId === 'self' ? { name: '我', avatar: 'fas fa-user-circle' } : contacts.find(c => c.id === m.contactId) || { name: '神秘人', avatar: 'fas fa-star' };
+            let likeIcon = m.likedBySelf ? 'fas fa-heart' : 'far fa-heart';
+            let commentsHtml = (m.comments || []).map(c => {
+                let who = c.from === 'self' ? '我' : (contacts.find(cc=>cc.id===c.from)?.name || '某人');
+                return `<div class="comment-item"><span class="comment-name">${who}:</span> ${c.text}</div>`;
+            }).join('');
+  return `
+            <div class="post-card" data-mid="${m.id}">
+                <div class="post-header">
+                    <div class="avatar">${renderAvatar(contact.avatar)}</div><b>${contact.name}</b> <span>${m.time}</span>
+                </div>
+                <div class="post-content">${m.content}</div>
+                <div class="post-actions">
+                    <span><i class="${likeIcon}" data-like="${m.id}"></i> <span class="like-count">${m.likes}</span></span>
+                    <span><i class="far fa-comment" data-comment="${m.id}"></i> 评论</span>
+                </div>
+                <div class="post-toolbar">
+                    <i class="fas fa-edit" data-edit="${m.id}"></i>
+                    <i class="fas fa-trash-alt" data-delete="${m.id}"></i>
+                </div>
+                <div class="comments" id="comments-${m.id}">${commentsHtml}</div>
+            </div>`;
+        }).join('');
+
+        feed.querySelectorAll('[data-like]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                let mid = Number(e.target.dataset.like);
+                let m = moments.find(x => x.id === mid);
+                if (m) {
+                    m.likedBySelf = !m.likedBySelf;
+                    m.likes += m.likedBySelf ? 1 : -1;
+                    renderMoments();
+                    saveAllData();
                 }
             });
         });
-
-        // 朋友圈渲染
-        function renderMoments() {
-            let feed = document.getElementById('momentFeed');
-            feed.innerHTML = moments.map(m => {
-                let contact = m.contactId === 'self' ? { name: '我', avatar: 'fas fa-user-circle' } : contacts.find(c => c.id === m.contactId) || { name: '神秘人', avatar: 'fas fa-star' };
-                let likeIcon = m.likedBySelf ? 'fas fa-heart' : 'far fa-heart';
-                let commentsHtml = (m.comments || []).map(c => {
-                    let who = c.from === 'self' ? '我' : (contacts.find(cc=>cc.id===c.from)?.name || '某人');
-                    return `<div class="comment-item"><span class="comment-name">${who}:</span> ${c.text}</div>`;
-                }).join('');
-                return `
-                <div class="post-card" data-mid="${m.id}">
-                    <div class="post-header">
-                        <div class="avatar">${renderAvatar(contact.avatar)}</div><b>${contact.name}</b> <span>${m.time}</span>
-                    </div>
-                    <div class="post-content">${m.content}</div>
-                    <div class="post-actions">
-                        <span><i class="${likeIcon}" data-like="${m.id}"></i> <span class="like-count">${m.likes}</span></span>
-                        <span><i class="far fa-comment" data-comment="${m.id}"></i> 评论</span>
-                    </div>
-                    <div class="post-toolbar">
-                        <i class="fas fa-edit" data-edit="${m.id}"></i>
-                        <i class="fas fa-trash-alt" data-delete="${m.id}"></i>
-                    </div>
-                    <div class="comments" id="comments-${m.id}">${commentsHtml}</div>
-                </div>`;
-            }).join('');
-
-            // 事件委托处理朋友圈操作
-            feed.querySelectorAll('[data-like]').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    let mid = Number(e.target.dataset.like);
-                    let m = moments.find(x => x.id === mid);
-                    if (m) {
-                        m.likedBySelf = !m.likedBySelf;
-                        m.likes += m.likedBySelf ? 1 : -1;
-                        renderMoments();
-                    }
-                });
-            });
-            feed.querySelectorAll('[data-comment]').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    let mid = Number(e.target.dataset.comment);
-                    let modal = document.createElement('div');
-                    modal.className = 'modal-overlay';
-                    modal.innerHTML = `<div class="modal-card"><h3>评论</h3><input id="commentText" placeholder="说点什么"><div class="flex"><button class="btn-small" id="submitComment">发送</button><button class="btn-small" id="cancelComment">取消</button></div></div>`;
-                    document.body.appendChild(modal);
-                    document.getElementById('cancelComment').addEventListener('click', () => modal.remove());
-                    document.getElementById('submitComment').addEventListener('click', () => {
-                        let txt =
-document.getElementById('commentText').value.trim();
-                        if (txt) {
-                            let m = moments.find(x => x.id === mid);
-                            if (m) {
-                                if (!m.comments) m.comments = [];
-                                m.comments.push({ from: 'self', text: txt });
-                                renderMoments();
-                            }
+        feed.querySelectorAll('[data-comment]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                let mid = Number(e.target.dataset.comment);
+                let modal = document.createElement('div');
+                modal.className = 'modal-overlay';
+                modal.innerHTML = `<div class="modal-card"><h3>评论</h3><input id="commentText" placeholder="说点什么"><div class="flex"><button class="btn-small" id="submitComment">发送</button><button class="btn-small" id="cancelComment">取消</button></div></div>`;
+                document.body.appendChild(modal);
+                document.getElementById('cancelComment').addEventListener('click', () => modal.remove());
+                document.getElementById('submitComment').addEventListener('click', () => {
+                    let txt = document.getElementById('commentText').value.trim();
+                    if (txt) {
+                        let m = moments.find(x => x.id === mid);
+                        if (m) {
+                            if (!m.comments) m.comments = [];
+                            m.comments.push({ from: 'self', text: txt });
+                            renderMoments();
+                            saveAllData();
                         }
-                        modal.remove();
-                    });
+                    }
+                    modal.remove();
                 });
             });
-            feed.querySelectorAll('[data-edit]').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    let mid = Number(e.target.dataset.edit);
-                    let m = moments.find(x => x.id === mid);
-                    if (!m) return;
-                    let modal = document.createElement('div');
-                    modal.className = 'modal-overlay';
-                    modal.innerHTML = `<div class="modal-card"><h3>编辑内容</h3><textarea id="editContent" rows="3">${m.content}</textarea><div class="flex"><button class="btn-small" id="saveEdit">保存</button><button class="btn-small" id="cancelEdit">取消</button></div></div>`;
-                    document.body.appendChild(modal);
-                    document.getElementById('cancelEdit').addEventListener('click', () => modal.remove());
-                    document.getElementById('saveEdit').addEventListener('click', () => {
-                        let newText = document.getElementById('editContent').value.trim();
-                        if (newText) { m.content = newText; renderMoments(); }
-                        modal.remove();
-                    });
+        });
+        feed.querySelectorAll('[data-edit]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                let mid = Number(e.target.dataset.edit);
+                let m = moments.find(x => x.id === mid);
+                if (!m) return;
+                let modal = document.createElement('div');
+                modal.className = 'modal-overlay';
+                modal.innerHTML = `<div class="modal-card"><h3>编辑内容</h3><textarea id="editContent" rows="3">${m.content}</textarea><div class="flex"><button class="btn-small" id="saveEdit">保存</button><button class="btn-small" id="cancelEdit">取消</button></div></div>`;
+                document.body.appendChild(modal);
+                document.getElementById('cancelEdit').addEventListener('click', () => modal.remove());
+                document.getElementById('saveEdit').addEventListener('click', () => {
+                    let newText = document.getElementById('editContent').value.trim();
+                    if (newText) { m.content = newText; renderMoments(); saveAllData(); }
+                    modal.remove();
                 });
             });
-            feed.querySelectorAll('[data-delete]').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    let mid = Number(e.target.dataset.delete);
-                    moments = moments.filter(x => x.id !== mid);
-                    renderMoments();
-                });
+        });
+        feed.querySelectorAll('[data-delete]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                let mid = Number(e.target.dataset.delete);
+                moments = moments.filter(x => x.id !== mid);
+                renderMoments();
+                saveAllData();
             });
-        }
-// 自己发朋友圈
-        document.getElementById('postSelfMoment').addEventListener('click', () => {
-            let content = prompt('写点什么？', '今天的心情');
-            if (content) moments.push({ id: newId(moments), contactId: 'self', content, time: '刚刚', likes: 0, likedBySelf: false, comments: [] });
-            renderMoments();
         });
-        // AI自动发圈
-        document.getElementById('aiGenMoment').addEventListener('click', () => {
-            let c = contacts[Math.floor(Math.random() * contacts.length)];
-            moments.push({ id: newId(moments), contactId: c.id, content: `今天${c.weather || '晴'}，心情${c.mood || '美好'}。`, time: '刚刚', likes: 1, likedBySelf: false, comments: [] });
-            renderMoments();
-        });
-
-        // 塔罗模块 ------------------------------------------------
-        document.getElementById('drawTarotBtn').addEventListener('click', () => {
-            let num = document.querySelector('input[name="cardNum"]:checked').value;
-            let cardsDiv = document.getElementById('tarotCards');
-            cardsDiv.innerHTML = '';
-            for (let i=0; i<num; i++) {
-                cardsDiv.innerHTML += `<div style="background:#ebd0e2; width:80px;height:120px;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 5px 0 #b485a8;"><i class="fas fa-star"></i><span>牌${i+1}</span><small>逆位</small></div>`;
-            }
-            let inter = ['充满希望', '耐心等待', '新的相遇', '旧事浮现', '顺其自然'];
-            document.getElementById('tarotInterpret').innerText = '🔮 AI解读：' + inter[Math.floor(Math.random()*inter.length)] + ' (模拟)';
-        });
-
-        // 设置模块 ------------------------------------------------
-   // ---------- 设置模块 ----------
-const phraseText = document.getElementById('phraseTextarea');
-const phraseBank = document.getElementById('phraseBank');
-
-// 刷新字条库显示
-function refreshPhraseBank() {
-    phraseText.value = phrases.join('\n');
-    phraseBank.innerHTML = phrases.map(p => 
-        `<div class="phrase-item">📄 ${p} <i class="far fa-trash-alt" data-ph="${p}"></i></div>`
-    ).join('');
-}
-
-// 保存手动修改
-document.getElementById('savePhrases').addEventListener('click', () => {
-    phrases = phraseText.value.split('\n').map(s => s.trim()).filter(s => s);
-    refreshPhraseBank();
-});
-
-// 导入 JSON（支持纯数组或含 customReplies 的对象）
-document.getElementById('importJsonBtn').addEventListener('click', () => {
-    document.getElementById('jsonFile').click();
-});
-
-document.getElementById('jsonFile').addEventListener('change', (e) => {
-    let file = e.target.files[0];
-    if (!file) return;
-    let reader = new FileReader();
-    reader.onload = (ev) => {
-        try {
-            let obj = JSON.parse(ev.target.result);
-            let newItems = [];
-            if (Array.isArray(obj)) {
-                newItems = obj;
-            } else if (obj.customReplies && Array.isArray(obj.customReplies)) {
-                newItems = obj.customReplies;
-            } else {
-                alert('JSON 应为字符串数组或包含 customReplies 数组的对象');
-                return;
-            }
-            // 追加模式：将新项添加到现有 phrases 末尾（不去重，如需去重可自行添加）
-            phrases = phrases.concat(newItems);
-            refreshPhraseBank();                // 更新界面显示
-            if (typeof saveAllData === 'function') saveAllData(); // 如果有存档功能，保存到本地
-        } catch {
-            alert('文件格式错误，请导入有效的 JSON');
-        }
-    };
-    reader.readAsText(file);
-});
-
-// 删除单条字条
-phraseBank.addEventListener('click', (e) => {
-    if (e.target.classList.contains('fa-trash-alt')) {
-        let del = e.target.parentElement.dataset.ph;
-        phrases = phrases.filter(p => p !== del);
-        refreshPhraseBank();
     }
-});
 
-// 视觉设置应用
-document.getElementById('applySettings').addEventListener('click', () => {
-    let homeColor = document.getElementById('homeBgColor').value;
-    document.querySelector('.phone').style.background = homeColor;
-    let bubbleColor = document.getElementById('bubbleMeColor').value;
-    document.styleSheets[0].insertRule(`.message.me { background-color: ${bubbleColor} !important; }`, 0);
-    let fontSize = document.getElementById('otherFontSize').value + 'px';
-    document.styleSheets[0].insertRule(`.message.other { font-size: ${fontSize}; }`, 0);
-});
+    document.getElementById('postSelfMoment').addEventListener('click', () => {
+        let content = prompt('写点什么？', '今天的心情');
+        if (content) {
+            moments.push({ id: newId(moments), contactId: 'self', content, time: '刚刚', likes: 0, likedBySelf: false, comments: [] });
+            renderMoments();
+            saveAllData();
+        }
+    });
 
-// 初始化显示
-refreshPhraseBank();
-
-        // 初始化渲染
-        renderChatContacts();
-        renderWcChat();
-        renderFullContacts();
+    document.getElementById('aiGenMoment').addEventListener('click', () => {
+        let c = contacts[Math.floor(Math.random() * contacts.length)];
+        moments.push({ id: newId(moments), contactId: c.id, content: `今天${c.weather || '晴'}，心情${c.mood || '美好'}。`, time: '刚刚', likes: 1, likedBySelf: false, comments: [] });
         renderMoments();
-    })();
+        saveAllData();
+    });
+
+    // ---------- 塔罗模块 ----------
+    document.getElementById('drawTarotBtn').addEventListener('click', () => {
+        let num = document.querySelector('input[name="cardNum"]:checked').value;
+        let cardsDiv = document.getElementById('tarotCards');
+        cardsDiv.innerHTML = '';
+        for (let i = 0; i < num; i++) {
+            cardsDiv.innerHTML += `<div style="background:#ebd0e2; width:80px;height:120px;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 5px 0 #b485a8;"><i class="fas fa-star"></i><span>牌${i+1}</span><small>逆位</small></div>`;
+        }
+        let inter = ['充满希望', '耐心等待', '新的相遇', '旧事浮现', '顺其自然'];
+        document.getElementById('tarotInterpret').innerText = '🔮 AI解读：' + inter[Math.floor(Math.random()*inter.length)] + ' (模拟)';
+    });
+
+    // ---------- 设置模块 ----------
+    const phraseText = document.getElementById('phraseTextarea');
+    const phraseBank = document.getElementById('phraseBank');
+    function refreshPhraseBank() {
+        phraseText.value = phrases.join('\n');
+        phraseBank.innerHTML = phrases.map(p => 
+            `<div class="phrase-item">📄 ${p} <i class="far fa-trash-alt" data-ph="${p}"></i></div>`
+        ).join('');
+    }
+    document.getElementById('savePhrases').addEventListener('click', () => {
+        phrases = phraseText.value.split('\n').map(s => s.trim()).filter(s => s);
+        refreshPhraseBank();
+        saveAllData();
+    });
+    document.getElementById('importJsonBtn').addEventListener('click', () => {
+        document.getElementById('jsonFile').click();
+    });
+    document.getElementById('jsonFile').addEventListener('change', (e) => {
+        let file = e.target.files[0];
+        if (!file) return;
+        let reader = new FileReader();
+        reader.onload = (ev) => {
+            try {
+                let obj = JSON.parse(ev.target.result);
+                let newItems = [];
+                if (Array.isArray(obj)) {
+                    newItems = obj;
+                } else if (obj.customReplies && Array.isArray(obj.customReplies)) {
+                    newItems = obj.customReplies;
+                } else {
+                    alert('JSON 应为字符串数组或包含 customReplies 数组的对象');
+                    return;
+                }
+                phrases = phrases.concat(newItems);
+                refreshPhraseBank();
+                saveAllData();
+            } catch {
+                alert('文件格式错误，请导入有效的 JSON');
+            }
+        };
+        reader.readAsText(file);
+    });
+    phraseBank.addEventListener('click', (e) => {
+        if (e.target.classList.contains('fa-trash-alt')) {
+            let del = e.target.parentElement.dataset.ph;
+            phrases = phrases.filter(p => p !== del);
+            refreshPhraseBank();
+            saveAllData();
+        }
+    });
+    document.getElementById('applySettings').addEventListener('click', () => {
+        let homeColor = document.getElementById('homeBgColor').value;
+        document.querySelector('.phone').style.background = homeColor;
+        let bubbleColor = document.getElementById('bubbleMeColor').value;
+        document.styleSheets[0].insertRule(`.message.me { background-color: ${bubbleColor} !important; }`, 0);
+        let fontSize = document.getElementById('otherFontSize').value + 'px';
+        document.styleSheets[0].insertRule(`.message.other { font-size: ${fontSize}; }`, 0);
+    });
+
+    // ---------- 初始化渲染 ----------
+    renderWrite();
+    renderChatContacts();
+    renderWcChat();
+    renderFullContacts();
+    renderMoments();
+    refreshPhraseBank();
+})();
 </script>
 </body>
 </html>
