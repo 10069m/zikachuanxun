@@ -825,23 +825,36 @@ document.getElementById('commentText').value.trim();
         });
 
         // 设置模块 ------------------------------------------------
-        const phraseText = document.getElementById('phraseTextarea');
-        const phraseBank = document.getElementById('phraseBank');
-        function refreshPhraseBank() {
-            phraseText.value = phrases.join('\n');
-            phraseBank.innerHTML = phrases.map(p => `<div class="phrase-item">📄 ${p} <i class="far fa-trash-alt" data-ph="${p}"></i></div>`).join('');
-        }
+   // ---------- 设置模块 ----------
+const phraseText = document.getElementById('phraseTextarea');
+const phraseBank = document.getElementById('phraseBank');
+
+// 刷新字条库显示
+function refreshPhraseBank() {
+    phraseText.value = phrases.join('\n');
+    phraseBank.innerHTML = phrases.map(p => 
+        `<div class="phrase-item">📄 ${p} <i class="far fa-trash-alt" data-ph="${p}"></i></div>`
+    ).join('');
+}
+
+// 保存手动修改
+document.getElementById('savePhrases').addEventListener('click', () => {
+    phrases = phraseText.value.split('\n').map(s => s.trim()).filter(s => s);
+    refreshPhraseBank();
+});
+
+// 导入 JSON（支持纯数组或含 customReplies 的对象）
 document.getElementById('importJsonBtn').addEventListener('click', () => {
     document.getElementById('jsonFile').click();
 });
-        document.getElementById('jsonFile').addEventListener('change', (e) => {
+
+document.getElementById('jsonFile').addEventListener('change', (e) => {
     let file = e.target.files[0];
     if (!file) return;
     let reader = new FileReader();
     reader.onload = (ev) => {
-        try { 
+        try {
             let obj = JSON.parse(ev.target.result);
-            // 如果解析结果是数组，直接使用；如果是对象且有 customReplies 字段，则取其值
             if (Array.isArray(obj)) {
                 phrases = obj;
             } else if (obj.customReplies && Array.isArray(obj.customReplies)) {
@@ -851,28 +864,34 @@ document.getElementById('importJsonBtn').addEventListener('click', () => {
                 return;
             }
             refreshPhraseBank();
-        } catch { 
-            alert('文件格式错误，请导入有效的 JSON'); 
+        } catch {
+            alert('文件格式错误，请导入有效的 JSON');
         }
     };
     reader.readAsText(file);
 });
-        phraseBank.addEventListener('click', (e) => {
-            if (e.target.classList.contains('fa-trash-alt')) {
-                let del = e.target.parentElement.dataset.ph;
-                phrases = phrases.filter(p => p !== del);
-                refreshPhraseBank();
-            }
-        });
-        document.getElementById('applySettings').addEventListener('click', () => {
-            let homeColor = document.getElementById('homeBgColor').value;
-            document.querySelector('.phone').style.background = homeColor;
-            let bubbleColor = document.getElementById('bubbleMeColor').value;
-            document.styleSheets[0].insertRule(`.message.me { background-color: ${bubbleColor} !important; }`, 0);
-            let fontSize = document.getElementById('otherFontSize').value + 'px';
-            document.styleSheets[0].insertRule(`.message.other { font-size: ${fontSize}; }`, 0);
-        });
+
+// 删除单条字条
+phraseBank.addEventListener('click', (e) => {
+    if (e.target.classList.contains('fa-trash-alt')) {
+        let del = e.target.parentElement.dataset.ph;
+        phrases = phrases.filter(p => p !== del);
         refreshPhraseBank();
+    }
+});
+
+// 视觉设置应用
+document.getElementById('applySettings').addEventListener('click', () => {
+    let homeColor = document.getElementById('homeBgColor').value;
+    document.querySelector('.phone').style.background = homeColor;
+    let bubbleColor = document.getElementById('bubbleMeColor').value;
+    document.styleSheets[0].insertRule(`.message.me { background-color: ${bubbleColor} !important; }`, 0);
+    let fontSize = document.getElementById('otherFontSize').value + 'px';
+    document.styleSheets[0].insertRule(`.message.other { font-size: ${fontSize}; }`, 0);
+});
+
+// 初始化显示
+refreshPhraseBank();
 
         // 初始化渲染
         renderChatContacts();
